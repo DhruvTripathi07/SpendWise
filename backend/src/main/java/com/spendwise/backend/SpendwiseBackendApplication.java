@@ -9,5 +9,4 @@ public class SpendwiseBackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SpendwiseBackendApplication.class, args);
 	}
-
 }
