@@ -3,11 +3,17 @@ package com.spendwise.backend.service;
 import java.time.LocalDate;
 
 import org.springframework.stereotype.Service; 
-
+import com.spendwise.backend.repository.ExpenseRepository;
 import com.spendwise.backend.model.Expense; 
 
 @Service
 public class ExpenseService {
+    private final ExpenseRepository expenseRepository;
+
+    public ExpenseService(ExpenseRepository expenseRepository) {
+        this.expenseRepository = expenseRepository;
+    }
+
     public Expense createDummyExpense() {
 
         Expense expense = new Expense();
@@ -19,6 +25,7 @@ public class ExpenseService {
         expense.setPaymentMode("UPI");
         expense.setDate(LocalDate.now());
 
-        return expense;
+        Expense savedExpense = expenseRepository.save(expense);
+        return savedExpense;
 }
 }

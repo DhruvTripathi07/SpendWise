@@ -1,8 +1,12 @@
 package com.spendwise.backend.model;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 import java.time.LocalDate;
 
+@Entity
 public class Expense {
+    @Id
     private int id;
 
     private double amount;
