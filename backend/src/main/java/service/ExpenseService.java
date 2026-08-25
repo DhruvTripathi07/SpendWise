@@ -1,6 +1,7 @@
 package com.spendwise.backend.service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.stereotype.Service; 
 import com.spendwise.backend.repository.ExpenseRepository;
@@ -13,19 +14,27 @@ public class ExpenseService {
     public ExpenseService(ExpenseRepository expenseRepository) {
         this.expenseRepository = expenseRepository;
     }
-
-    public Expense createDummyExpense() {
-
-        Expense expense = new Expense();
-
-        expense.setId(1);
-        expense.setAmount(350);
-        expense.setCategory("Food");
-        expense.setDescription("Pizza");
-        expense.setPaymentMode("UPI");
-        expense.setDate(LocalDate.now());
-
-        Expense savedExpense = expenseRepository.save(expense);
-        return savedExpense;
-}
+    //CREATE, READ, UPDATE, DELETE (CRUD) operations for Expense entity
+    //CREATE
+    public Expense createExpense(Expense expense) {
+        return expenseRepository.save(expense);
+    }
+    //READALL
+    public List<Expense> getAllExpenses() {
+        return expenseRepository.findAll();
+    }
+    //READBYID
+    public Expense getExpenseById(int id) {
+        return expenseRepository.findById(id)
+                .orElse(null);
+    }
+    //UPDATE
+    public Expense updateExpense(int id, Expense expense) {
+        expense.setId(id);
+        return expenseRepository.save(expense);
+    }
+    //DELETE
+    public void deleteExpense(int id) {
+        expenseRepository.deleteById(id);
+    }
 }
