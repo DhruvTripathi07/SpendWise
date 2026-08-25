@@ -3,6 +3,8 @@ package com.spendwise.backend.controller;
 import org.springframework.web.bind.annotation.RestController;
 import com.spendwise.backend.model.Expense;
 import com.spendwise.backend.service.ExpenseService;
+import com.spendwise.backend.dto.ExpenseRequest;
+import jakarta.validation.Valid;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
+
 @RestController
 @RequestMapping("/expenses")
 public class ExpenseController {
@@ -25,8 +28,8 @@ public class ExpenseController {
     }
 
     @PostMapping
-    public Expense createExpense(@RequestBody Expense expense) {
-        return expenseService.createExpense(expense);
+    public Expense createExpense(@Valid @RequestBody ExpenseRequest request) {
+        return expenseService.createExpense(request);
     }
     
     @GetMapping
