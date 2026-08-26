@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +30,7 @@ public class ExpenseController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Expense createExpense(@Valid @RequestBody ExpenseRequest request) {
         return expenseService.createExpense(request);
     }
@@ -45,11 +48,12 @@ public class ExpenseController {
     @PutMapping("/{id}")
     public Expense updateExpense(
             @PathVariable int id,
-            @RequestBody Expense expense) {
-        return expenseService.updateExpense(id, expense);
+            @Valid @RequestBody ExpenseRequest request) {
+        return expenseService.updateExpense(id, request);
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteExpense(@PathVariable int id) {
         expenseService.deleteExpense(id);
     }

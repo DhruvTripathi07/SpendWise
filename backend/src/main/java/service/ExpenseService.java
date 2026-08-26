@@ -33,6 +33,7 @@ public class ExpenseService {
 
         return expenseRepository.save(expense);
     }
+    
     //READALL
     public List<Expense> getAllExpenses() {
         return expenseRepository.findAll();
@@ -42,15 +43,27 @@ public class ExpenseService {
         return expenseRepository.findById(id)
                 .orElseThrow(() -> new ExpenseNotFoundException("Expense with ID" + id + " not found"));
     }
+
     //UPDATE
-    public Expense updateExpense(int id, Expense expense) {
+    public Expense updateExpense(int id, ExpenseRequest request) {
+
         if (!expenseRepository.existsById(id)) {
             throw new ExpenseNotFoundException(
                     "Expense with ID " + id + " not found");
         }
+
+        Expense expense = new Expense();
+
         expense.setId(id);
+        expense.setAmount(request.getAmount());
+        expense.setCategory(request.getCategory());
+        expense.setDescription(request.getDescription());
+        expense.setPaymentMode(request.getPaymentMode());
+        expense.setDate(request.getDate());
+
         return expenseRepository.save(expense);
     }
+
     //DELETE
     public void deleteExpense(int id) {
         if (!expenseRepository.existsById(id)) {
