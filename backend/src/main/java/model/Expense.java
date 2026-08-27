@@ -1,8 +1,13 @@
 package com.spendwise.backend.model;
+
+import com.spendwise.backend.model.User;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 import java.time.LocalDate;
 
 @Entity
@@ -16,7 +21,18 @@ public class Expense {
     private String paymentMode;
     private LocalDate date;
     
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+    
     public int getId() {
         return id;
     }

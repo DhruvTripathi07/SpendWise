@@ -48,8 +48,8 @@ public class ExpenseController {
     @PutMapping("/{id}")
     public Expense updateExpense(
             @PathVariable int id,
-            @Valid @RequestBody ExpenseRequest request) {
-        return expenseService.updateExpense(id, request);
+            @Valid @RequestBody ExpenseRequest updatedExpense) {
+        return expenseService.updateExpense(id, updatedExpense);
     }
 
     @DeleteMapping("/{id}")

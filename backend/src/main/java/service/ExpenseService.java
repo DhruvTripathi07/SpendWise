@@ -1,6 +1,9 @@
 package com.spendwise.backend.service;
 
 import com.spendwise.backend.exception.ExpenseNotFoundException;
+import com.spendwise.backend.model.User;
+import com.spendwise.backend.repository.UserRepository;
+import com.spendwise.backend.exception.ResourceNotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,14 +12,17 @@ import org.springframework.stereotype.Service;
 import com.spendwise.backend.repository.ExpenseRepository;
 import com.spendwise.backend.model.Expense; 
 import com.spendwise.backend.dto.ExpenseRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 
 @Service
 public class ExpenseService {
     private final ExpenseRepository expenseRepository;
-
-    public ExpenseService(ExpenseRepository expenseRepository) {
+    private final UserRepository userRepository;
+    
+    public ExpenseService(ExpenseRepository expenseRepository, UserRepository userRepository) {
         this.expenseRepository = expenseRepository;
+        this.userRepository = userRepository;
     }
     //CREATE, READ, UPDATE, DELETE (CRUD) operations for Expense entity
     //CREATE
@@ -31,45 +37,76 @@ public class ExpenseService {
         expense.setPaymentMode(request.getPaymentMode());
         expense.setDate(request.getDate());
 
+        expense.setUser(getCurrentUser());
+
         return expenseRepository.save(expense);
     }
     
     //READALL
     public List<Expense> getAllExpenses() {
-        return expenseRepository.findAll();
+        User user = getCurrentUser();
+
+        return expenseRepository.findByUserId(user.getId());
     }
     //READBYID
     public Expense getExpenseById(int id) {
-        return expenseRepository.findById(id)
-                .orElseThrow(() -> new ExpenseNotFoundException("Expense with ID" + id + " not found"));
+        User user = getCurrentUser();
+
+        Expense expense = expenseRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Expense not found"));
+
+        if (expense.getUser().getId() != user.getId()) {
+            throw new ResourceNotFoundException("Expense not found");
+        }
+
+        return expense;
     }
 
     //UPDATE
-    public Expense updateExpense(int id, ExpenseRequest request) {
+    public Expense updateExpense(int id, ExpenseRequest updatedExpense) {
 
-        if (!expenseRepository.existsById(id)) {
-            throw new ExpenseNotFoundException(
-                    "Expense with ID " + id + " not found");
+        User currentUser = getCurrentUser();
+
+        Expense expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Expense not found"));
+
+        if (expense.getUser().getId() != currentUser.getId()) {
+            throw new ResourceNotFoundException("Expense not found");
         }
 
-        Expense expense = new Expense();
-
-        expense.setId(id);
-        expense.setAmount(request.getAmount());
-        expense.setCategory(request.getCategory());
-        expense.setDescription(request.getDescription());
-        expense.setPaymentMode(request.getPaymentMode());
-        expense.setDate(request.getDate());
+        expense.setAmount(updatedExpense.getAmount());
+        expense.setCategory(updatedExpense.getCategory());
+        expense.setDescription(updatedExpense.getDescription());
+        expense.setPaymentMode(updatedExpense.getPaymentMode());
+        expense.setDate(updatedExpense.getDate());
 
         return expenseRepository.save(expense);
     }
 
     //DELETE
     public void deleteExpense(int id) {
-        if (!expenseRepository.existsById(id)) {
-            throw new ExpenseNotFoundException(
-                    "Expense with ID " + id + " not found");
+        User currentUser = getCurrentUser();
+
+        Expense expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Expense not found"));
+
+        if (expense.getUser().getId() != currentUser.getId()) {
+            throw new ResourceNotFoundException("Expense not found");
         }
-        expenseRepository.deleteById(id);
+
+        expenseRepository.delete(expense);
+    }
+
+    private User getCurrentUser() {
+
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        return userRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
     }
 }
