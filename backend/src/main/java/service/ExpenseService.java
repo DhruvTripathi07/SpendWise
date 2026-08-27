@@ -1,6 +1,5 @@
 package com.spendwise.backend.service;
 
-import com.spendwise.backend.exception.ExpenseNotFoundException;
 import com.spendwise.backend.model.User;
 import com.spendwise.backend.repository.UserRepository;
 import com.spendwise.backend.exception.ResourceNotFoundException;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.spendwise.backend.repository.ExpenseRepository;
 import com.spendwise.backend.model.Expense; 
 import com.spendwise.backend.dto.ExpenseRequest;
+import com.spendwise.backend.dto.ExpenseResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 
@@ -43,13 +43,16 @@ public class ExpenseService {
     }
     
     //READALL
-    public List<Expense> getAllExpenses() {
+    public List<ExpenseResponse> getAllExpenses() {
         User user = getCurrentUser();
 
-        return expenseRepository.findByUserId(user.getId());
+        return expenseRepository.findByUserId(user.getId())
+                .stream()
+                .map(this::buildExpenseResponse)
+                .toList();
     }
     //READBYID
-    public Expense getExpenseById(int id) {
+    public ExpenseResponse getExpenseById(int id) {
         User user = getCurrentUser();
 
         Expense expense = expenseRepository
@@ -60,7 +63,7 @@ public class ExpenseService {
             throw new ResourceNotFoundException("Expense not found");
         }
 
-        return expense;
+        return buildExpenseResponse(expense);
     }
 
     //UPDATE
@@ -96,6 +99,17 @@ public class ExpenseService {
         }
 
         expenseRepository.delete(expense);
+    }
+
+    private ExpenseResponse buildExpenseResponse(Expense expense) {
+
+        return new ExpenseResponse(
+                expense.getId(),
+                expense.getAmount(),
+                expense.getCategory(),
+                expense.getDescription(),
+                expense.getPaymentMode(),
+                expense.getDate());
     }
 
     private User getCurrentUser() {

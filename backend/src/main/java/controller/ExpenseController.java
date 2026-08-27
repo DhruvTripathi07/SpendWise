@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.spendwise.backend.model.Expense;
 import com.spendwise.backend.service.ExpenseService;
 import com.spendwise.backend.dto.ExpenseRequest;
+import com.spendwise.backend.dto.ExpenseResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 
@@ -36,12 +37,12 @@ public class ExpenseController {
     }
     
     @GetMapping
-    public List<Expense> getAllExpenses() {
+    public List<ExpenseResponse> getAllExpenses() {
         return expenseService.getAllExpenses();
     }
 
     @GetMapping("/{id}")
-    public Expense getExpenseById(@PathVariable int id) {
+    public ExpenseResponse getExpenseById(@PathVariable int id) {
         return expenseService.getExpenseById(id);
     }
 
