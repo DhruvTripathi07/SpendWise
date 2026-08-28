@@ -3,15 +3,18 @@ package com.spendwise.backend.service;
 import com.spendwise.backend.model.User;
 import com.spendwise.backend.repository.UserRepository;
 import com.spendwise.backend.exception.ResourceNotFoundException;
+import com.spendwise.backend.repository.ExpenseRepository;
+import com.spendwise.backend.model.Expense;
+import com.spendwise.backend.dto.ExpenseRequest;
+import com.spendwise.backend.dto.ExpenseResponse;
+import com.spendwise.backend.dto.MonthlySummaryResponse;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.stereotype.Service; 
-import com.spendwise.backend.repository.ExpenseRepository;
-import com.spendwise.backend.model.Expense; 
-import com.spendwise.backend.dto.ExpenseRequest;
-import com.spendwise.backend.dto.ExpenseResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 
@@ -112,6 +115,36 @@ public class ExpenseService {
                 expense.getDate());
     }
 
+    public MonthlySummaryResponse getMonthlySummary(LocalDate month) {
+
+        User currentUser = getCurrentUser();
+
+        LocalDate startDate = month.withDayOfMonth(1);
+        LocalDate endDate = startDate.plusMonths(1);
+
+        List<Map<String, Object>> categoryTotals = expenseRepository.getCategoryTotals(
+                currentUser.getId(),
+                startDate,
+                endDate);
+
+        Map<String, Double> categories = new HashMap<>();
+        double totalSpent = 0;
+
+        for (Map<String, Object> row : categoryTotals) {
+
+            String category = (String) row.get("category");
+            double total = ((Number) row.get("total")).doubleValue();
+
+            categories.put(category, total);
+            totalSpent += total;
+        }
+
+        return new MonthlySummaryResponse(
+                startDate,
+                totalSpent,
+                categories);
+    }
+    
     private User getCurrentUser() {
 
         String email = SecurityContextHolder
