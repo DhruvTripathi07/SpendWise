@@ -54,6 +54,18 @@ public class ExpenseService {
                 .map(this::buildExpenseResponse)
                 .toList();
     }
+
+    public List<ExpenseResponse> getExpensesByCategory(String category) {
+
+        User currentUser = getCurrentUser();
+
+        return expenseRepository
+                .findByUserIdAndCategory(currentUser.getId(), category)
+                .stream()
+                .map(this::buildExpenseResponse)
+                .toList();
+    }
+    
     //READBYID
     public ExpenseResponse getExpenseById(int id) {
         User user = getCurrentUser();
@@ -67,6 +79,43 @@ public class ExpenseService {
         }
 
         return buildExpenseResponse(expense);
+    }
+
+    public List<ExpenseResponse> getExpensesByMonth(LocalDate month) {
+
+        User currentUser = getCurrentUser();
+
+        LocalDate startDate = month.withDayOfMonth(1);
+        LocalDate endDate = startDate.plusMonths(1);
+
+        return expenseRepository
+                .findByUserIdAndDateGreaterThanEqualAndDateLessThan(
+                        currentUser.getId(),
+                        startDate,
+                        endDate)
+                .stream()
+                .map(this::buildExpenseResponse)
+                .toList();
+    }
+
+    public List<ExpenseResponse> getExpensesByCategoryAndMonth(
+            String category,
+            LocalDate month) {
+
+        User currentUser = getCurrentUser();
+
+        LocalDate startDate = month.withDayOfMonth(1);
+        LocalDate endDate = startDate.plusMonths(1);
+
+        return expenseRepository
+                .findByUserIdAndCategoryAndDateGreaterThanEqualAndDateLessThan(
+                        currentUser.getId(),
+                        category,
+                        startDate,
+                        endDate)
+                .stream()
+                .map(this::buildExpenseResponse)
+                .toList();
     }
 
     //UPDATE

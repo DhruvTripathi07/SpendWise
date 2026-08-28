@@ -15,6 +15,21 @@ public interface ExpenseRepository
 
     List<Expense> findByUserId(int userId);
 
+    List<Expense> findByUserIdAndCategory(
+      int userId, 
+      String category);
+    
+    List<Expense> findByUserIdAndDateGreaterThanEqualAndDateLessThan(
+      int userId,
+      LocalDate startDate, 
+      LocalDate endDate);
+
+    List<Expense> findByUserIdAndCategoryAndDateGreaterThanEqualAndDateLessThan(
+        int userId,
+        String category,
+        LocalDate startDate,
+        LocalDate endDate);
+        
      @Query("""
             SELECT COALESCE(SUM(e.amount), 0)
             FROM Expense e

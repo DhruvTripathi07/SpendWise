@@ -41,7 +41,22 @@ public class ExpenseController {
     }
     
     @GetMapping
-    public List<ExpenseResponse> getAllExpenses() {
+    public List<ExpenseResponse> getAllExpenses(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) LocalDate month) {
+
+        if (category != null && !category.isBlank() && month != null) {
+            return expenseService.getExpensesByCategoryAndMonth(category, month);
+        }
+
+        if (category != null && !category.isBlank()) {
+            return expenseService.getExpensesByCategory(category);
+        }
+
+        if (month != null) {
+            return expenseService.getExpensesByMonth(month);
+        }
+
         return expenseService.getAllExpenses();
     }
 
