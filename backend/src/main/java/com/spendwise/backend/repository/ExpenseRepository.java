@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.math.BigDecimal;
 
 public interface ExpenseRepository
         extends JpaRepository<Expense, Integer> {
@@ -38,7 +39,7 @@ public interface ExpenseRepository
               AND e.date >= :startDate
               AND e.date < :endDate
             """)
-    double getTotalSpent(
+    BigDecimal getTotalSpent(
             @Param("userId") int userId,
             @Param("category") String category,
             @Param("startDate") LocalDate startDate,

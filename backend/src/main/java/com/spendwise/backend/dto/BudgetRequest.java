@@ -5,11 +5,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
+import java.math.BigDecimal;
 
 public class BudgetRequest {
 
     @Positive(message = "amount must be greater than 0")
-    private double amount;
+    private BigDecimal amount;
 
     @NotBlank(message = "category must not be blank")
     private String category;
@@ -20,11 +21,11 @@ public class BudgetRequest {
     public BudgetRequest() {
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

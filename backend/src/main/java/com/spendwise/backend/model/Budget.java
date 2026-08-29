@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 import java.time.LocalDate;
+import java.math.BigDecimal;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "category", "month" }))
@@ -19,7 +20,7 @@ public class Budget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private double amount;
+    private BigDecimal amount;
 
     private String category;
 
@@ -40,11 +41,11 @@ public class Budget {
         this.id = id;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

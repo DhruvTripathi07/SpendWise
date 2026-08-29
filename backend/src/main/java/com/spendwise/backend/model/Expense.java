@@ -8,14 +8,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
-import java.time.LocalDate;
 
+import java.time.LocalDate;
+import java.math.BigDecimal;
 @Entity
 public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private double amount;
+    private BigDecimal amount;
     private String category;
     private String description;
     private String paymentMode;
@@ -39,10 +40,10 @@ public class Expense {
     public void setId(int id) {
         this.id = id;
     }
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
     public String getCategory() {

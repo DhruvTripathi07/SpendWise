@@ -9,7 +9,9 @@ import com.spendwise.backend.dto.ExpenseRequest;
 import com.spendwise.backend.dto.ExpenseResponse;
 import com.spendwise.backend.dto.MonthlySummaryResponse;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
@@ -164,32 +166,32 @@ public class ExpenseService {
                 expense.getDate());
     }
 
-    public MonthlySummaryResponse getMonthlySummary(LocalDate month) {
+    public MonthlySummaryResponse getMonthlySummary(YearMonth month) {
 
         User currentUser = getCurrentUser();
 
-        LocalDate startDate = month.withDayOfMonth(1);
-        LocalDate endDate = startDate.plusMonths(1);
+        LocalDate startDate = month.atDay(1);
+        LocalDate endDate = month.plusMonths(1).atDay(1);
 
         List<Map<String, Object>> categoryTotals = expenseRepository.getCategoryTotals(
                 currentUser.getId(),
                 startDate,
                 endDate);
 
-        Map<String, Double> categories = new HashMap<>();
-        double totalSpent = 0;
+        Map<String, BigDecimal> categories = new HashMap<>();
+        BigDecimal totalSpent = BigDecimal.ZERO;
 
         for (Map<String, Object> row : categoryTotals) {
 
             String category = (String) row.get("category");
-            double total = ((Number) row.get("total")).doubleValue();
+            BigDecimal total = (BigDecimal) row.get("total");
 
             categories.put(category, total);
-            totalSpent += total;
+            totalSpent = totalSpent.add(total);
         }
 
         return new MonthlySummaryResponse(
-                startDate,
+                month,
                 totalSpent,
                 categories);
     }
@@ -203,6 +205,6 @@ public class ExpenseService {
 
         return userRepository
                 .findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
     }
 }

@@ -5,28 +5,29 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
+import java.math.BigDecimal;
 
 public class ExpenseRequest {
 
-    @Positive
-    private double amount;
+    @Positive(message = "amount must be greater than 0")
+    private BigDecimal amount;
 
-    @NotBlank
+    @NotBlank(message = "category must not be blank")
     private String category;
 
     private String description;
 
-    @NotBlank
+    @NotBlank(message = "paymentMode must not be blank")
     private String paymentMode;
 
-    @NotNull
+    @NotNull(message = "date must not be null")
     private LocalDate date;
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

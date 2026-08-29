@@ -1,36 +1,38 @@
 package com.spendwise.backend.dto;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Map;
+import java.math.BigDecimal;;
 
 public class MonthlySummaryResponse {
 
-    private LocalDate month;
-    private double totalSpent;
-    private Map<String, Double> categories;
+    private YearMonth month;
+    private BigDecimal totalSpent;
+    private Map<String, BigDecimal> categories;
 
     public MonthlySummaryResponse() {
     }
 
     public MonthlySummaryResponse(
-            LocalDate month,
-            double totalSpent,
-            Map<String, Double> categories) {
+            YearMonth month,
+            BigDecimal totalSpent,
+            Map<String, BigDecimal> categories) {
 
         this.month = month;
         this.totalSpent = totalSpent;
         this.categories = categories;
     }
 
-    public LocalDate getMonth() {
+    public YearMonth getMonth() {
         return month;
     }
 
-    public double getTotalSpent() {
+    public BigDecimal getTotalSpent() {
         return totalSpent;
     }
 
-    public Map<String, Double> getCategories() {
+    public Map<String, BigDecimal> getCategories() {
         return categories;
     }
 }

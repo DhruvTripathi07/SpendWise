@@ -10,14 +10,22 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExpenseNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleExpenseNotFound(ExpenseNotFoundException ex) {
-        return ex.getMessage();
+    public Map<String, Object> handleExpenseNotFound(
+            ExpenseNotFoundException ex) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("message", ex.getMessage());
+        response.put("status", 404);
+
+        return response;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -53,6 +61,19 @@ public class GlobalExceptionHandler {
         return response;
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, Object> handleTypeMismatch(
+            MethodArgumentTypeMismatchException ex) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("message", "Invalid value for parameter: " + ex.getName());
+        response.put("status", 400);
+
+        return response;
+    }
+    
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, Object> handleIllegalArgumentException(

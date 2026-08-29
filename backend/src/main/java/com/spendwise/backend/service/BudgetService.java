@@ -11,7 +11,10 @@ import com.spendwise.backend.repository.UserRepository;
 import com.spendwise.backend.repository.ExpenseRepository;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -131,7 +134,7 @@ public class BudgetService {
         budgetRepository.delete(budget);
     }
 
-    public double getSpentAmount(Budget budget) {
+    public BigDecimal getSpentAmount(Budget budget) {
 
         LocalDate startDate = budget.getMonth();
         LocalDate endDate = startDate.plusMonths(1);
@@ -142,23 +145,24 @@ public class BudgetService {
                 startDate,
                 endDate);
     }
+    
     private BudgetResponse buildBudgetResponse(Budget budget) {
 
-        double spent = getSpentAmount(budget);
+        BigDecimal spent = getSpentAmount(budget);
 
-        double remaining = budget.getAmount() - spent;
+        BigDecimal remaining = budget.getAmount().subtract(spent);
 
-        double progress = 0;
+        BigDecimal progress = BigDecimal.ZERO;
 
-        if (budget.getAmount() > 0) {
-            progress = (spent / budget.getAmount()) * 100;
+        if (budget.getAmount().compareTo(BigDecimal.ZERO) > 0) {
+            progress = spent.divide(budget.getAmount(), 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
         }
 
         return new BudgetResponse(
                 budget.getId(),
                 budget.getAmount(),
                 budget.getCategory(),
-                budget.getMonth(),
+                YearMonth.from(budget.getMonth()),
                 spent,
                 remaining,
                 progress
@@ -175,6 +179,6 @@ public class BudgetService {
 
         return userRepository
                 .findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
     }
 }

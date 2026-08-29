@@ -1,28 +1,30 @@
 package com.spendwise.backend.dto;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.math.BigDecimal;
 
 public class BudgetResponse {
 
     private int id;
-    private double amount;
+    private BigDecimal amount;
     private String category;
-    private LocalDate month;
-    private double spent;
-    private double remaining;
-    private double progress;
+    private YearMonth month;
+    private BigDecimal spent;
+    private BigDecimal remaining;
+    private BigDecimal progress;
 
     public BudgetResponse() {
     }
 
     public BudgetResponse(
             int id,
-            double amount,
+            BigDecimal amount,
             String category,
-            LocalDate month,
-            double spent,
-            double remaining,
-            double progress) {
+            YearMonth month,
+            BigDecimal spent,
+            BigDecimal remaining,
+            BigDecimal progress) {
 
         this.id = id;
         this.amount = amount;
@@ -37,7 +39,7 @@ public class BudgetResponse {
         return id;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
@@ -45,19 +47,19 @@ public class BudgetResponse {
         return category;
     }
 
-    public LocalDate getMonth() {
+    public YearMonth getMonth() {
         return month;
     }
 
-    public double getSpent() {
+    public BigDecimal getSpent() {
         return spent;
     }
 
-    public double getRemaining() {
+    public BigDecimal getRemaining() {
         return remaining;
     }
 
-    public double getProgress() {
+    public BigDecimal getProgress() {
         return progress;
     }
 }

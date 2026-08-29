@@ -10,6 +10,7 @@ import com.spendwise.backend.dto.MonthlySummaryResponse;
 import jakarta.validation.Valid;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,10 +44,10 @@ public class ExpenseController {
     @GetMapping
     public List<ExpenseResponse> getAllExpenses(
             @RequestParam(required = false) String category,
-            @RequestParam(required = false) LocalDate month) {
+            @RequestParam(required = false) YearMonth month) {
 
         if (category != null && !category.isBlank() && month != null) {
-            return expenseService.getExpensesByCategoryAndMonth(category, month);
+            return expenseService.getExpensesByCategoryAndMonth(category, month.atDay(1));
         }
 
         if (category != null && !category.isBlank()) {
@@ -54,7 +55,7 @@ public class ExpenseController {
         }
 
         if (month != null) {
-            return expenseService.getExpensesByMonth(month);
+            return expenseService.getExpensesByMonth(month.atDay(1));
         }
 
         return expenseService.getAllExpenses();
@@ -67,7 +68,7 @@ public class ExpenseController {
 
     @GetMapping("/summary")
     public MonthlySummaryResponse getMonthlySummary(
-            @RequestParam LocalDate month) {
+            @RequestParam YearMonth month) {
 
         return expenseService.getMonthlySummary(month);
     }

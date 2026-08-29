@@ -1,11 +1,12 @@
 package com.spendwise.backend.dto;
 
 import java.time.LocalDate;
+import java.math.BigDecimal;
 
 public class ExpenseResponse {
 
     private int id;
-    private double amount;
+    private BigDecimal amount;
     private String category;
     private String description;
     private String paymentMode;
@@ -16,7 +17,7 @@ public class ExpenseResponse {
 
     public ExpenseResponse(
             int id,
-            double amount,
+            BigDecimal amount,
             String category,
             String description,
             String paymentMode,
@@ -34,7 +35,7 @@ public class ExpenseResponse {
         return id;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
