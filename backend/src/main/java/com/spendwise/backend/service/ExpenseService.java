@@ -32,7 +32,7 @@ public class ExpenseService {
     //CREATE, READ, UPDATE, DELETE (CRUD) operations for Expense entity
     //CREATE
     // CREATE
-    public Expense createExpense(ExpenseRequest request) {
+    public ExpenseResponse createExpense(ExpenseRequest request) {
 
         Expense expense = new Expense();
 
@@ -44,7 +44,8 @@ public class ExpenseService {
 
         expense.setUser(getCurrentUser());
 
-        return expenseRepository.save(expense);
+        Expense savedExpense = expenseRepository.save(expense);
+        return buildExpenseResponse(savedExpense);
     }
     
     //READALL
@@ -121,7 +122,7 @@ public class ExpenseService {
     }
 
     //UPDATE
-    public Expense updateExpense(int id, ExpenseRequest updatedExpense) {
+    public ExpenseResponse updateExpense(int id, ExpenseRequest updatedExpense) {
 
         User currentUser = getCurrentUser();
 
@@ -138,7 +139,8 @@ public class ExpenseService {
         expense.setPaymentMode(updatedExpense.getPaymentMode());
         expense.setDate(updatedExpense.getDate());
 
-        return expenseRepository.save(expense);
+        Expense savedExpense = expenseRepository.save(expense);
+        return buildExpenseResponse(savedExpense);
     }
 
     //DELETE

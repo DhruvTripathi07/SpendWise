@@ -3,7 +3,6 @@ package com.spendwise.backend.controller;
 import com.spendwise.backend.dto.BudgetRequest;
 import com.spendwise.backend.dto.BudgetResponse;
 import com.spendwise.backend.service.BudgetService;
-import com.spendwise.backend.model.Budget;
 
 import jakarta.validation.Valid;
 
@@ -25,7 +24,7 @@ public class BudgetController {
     // CREATE
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Budget createBudget(@Valid @RequestBody BudgetRequest request) {
+    public BudgetResponse createBudget(@Valid @RequestBody BudgetRequest request) {
         return budgetService.createBudget(request);
     }
 
@@ -43,7 +42,7 @@ public class BudgetController {
 
     // UPDATE
     @PutMapping("/{id}")
-    public Budget updateBudget(
+    public BudgetResponse updateBudget(
             @PathVariable int id,
             @Valid @RequestBody BudgetRequest request) {
 

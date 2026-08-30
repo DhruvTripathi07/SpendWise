@@ -37,7 +37,7 @@ public class BudgetService {
     }
 
     // CREATE
-    public Budget createBudget(BudgetRequest request) {
+    public BudgetResponse createBudget(BudgetRequest request) {
 
         User currentUser = getCurrentUser();
 
@@ -58,7 +58,9 @@ public class BudgetService {
         budget.setMonth(request.getMonth());
         budget.setUser(currentUser);
 
-        return budgetRepository.save(budget);
+        Budget savedBudget = budgetRepository.save(budget);
+
+        return buildBudgetResponse(savedBudget);
     }
 
     // READ ALL
@@ -88,7 +90,7 @@ public class BudgetService {
     }
 
     // UPDATE
-    public Budget updateBudget(int id, BudgetRequest updatedBudget) {
+    public BudgetResponse updateBudget(int id, BudgetRequest updatedBudget) {
 
         User currentUser = getCurrentUser();
 
@@ -116,7 +118,8 @@ public class BudgetService {
         budget.setCategory(updatedBudget.getCategory());
         budget.setMonth(updatedBudget.getMonth());
 
-        return budgetRepository.save(budget);
+        Budget savedBudget = budgetRepository.save(budget);
+        return buildBudgetResponse(savedBudget);
     }
 
     // DELETE
@@ -158,6 +161,10 @@ public class BudgetService {
             progress = spent.divide(budget.getAmount(), 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
         }
 
+        BigDecimal progressPercent = progress.min(BigDecimal.valueOf(100));
+
+        boolean overBudget = spent.compareTo(budget.getAmount()) > 0;
+
         return new BudgetResponse(
                 budget.getId(),
                 budget.getAmount(),
@@ -165,7 +172,9 @@ public class BudgetService {
                 YearMonth.from(budget.getMonth()),
                 spent,
                 remaining,
-                progress
+                progress,
+                progressPercent,
+                overBudget
         );
     }
 

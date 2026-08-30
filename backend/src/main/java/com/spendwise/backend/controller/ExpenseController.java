@@ -1,7 +1,6 @@
 package com.spendwise.backend.controller;
 
 import org.springframework.web.bind.annotation.RestController;
-import com.spendwise.backend.model.Expense;
 import com.spendwise.backend.service.ExpenseService;
 import com.spendwise.backend.dto.ExpenseRequest;
 import com.spendwise.backend.dto.ExpenseResponse;
@@ -37,7 +36,7 @@ public class ExpenseController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Expense createExpense(@Valid @RequestBody ExpenseRequest request) {
+    public ExpenseResponse createExpense(@Valid @RequestBody ExpenseRequest request) {
         return expenseService.createExpense(request);
     }
     
@@ -74,7 +73,7 @@ public class ExpenseController {
     }
 
     @PutMapping("/{id}")
-    public Expense updateExpense(
+    public ExpenseResponse updateExpense(
             @PathVariable int id,
             @Valid @RequestBody ExpenseRequest updatedExpense) {
         return expenseService.updateExpense(id, updatedExpense);

@@ -13,6 +13,8 @@ public class BudgetResponse {
     private BigDecimal spent;
     private BigDecimal remaining;
     private BigDecimal progress;
+    private BigDecimal progressPercent;
+    private boolean overBudget;
 
     public BudgetResponse() {
     }
@@ -24,7 +26,9 @@ public class BudgetResponse {
             YearMonth month,
             BigDecimal spent,
             BigDecimal remaining,
-            BigDecimal progress) {
+            BigDecimal progress,
+            BigDecimal progressPercent,
+            boolean overBudget) {
 
         this.id = id;
         this.amount = amount;
@@ -33,6 +37,8 @@ public class BudgetResponse {
         this.spent = spent;
         this.remaining = remaining;
         this.progress = progress;
+        this.progressPercent = progressPercent;
+        this.overBudget = overBudget;
     }
 
     public int getId() {
@@ -61,5 +67,13 @@ public class BudgetResponse {
 
     public BigDecimal getProgress() {
         return progress;
+    }
+
+    public BigDecimal getProgressPercent() {
+        return progressPercent;
+    }
+
+    public boolean isOverBudget() {
+        return overBudget;
     }
 }
