@@ -7,11 +7,23 @@ function Dashboard() {
     const [dashboard, setDashboard] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [month, setMonth] = useState("2026-08");
+
+    const changeMonth = (amount) => {
+        const [year, currentMonth] = month.split("-");
+
+        const date = new Date(Number(year), Number(currentMonth) - 1 + amount);
+
+        const newYear = date.getFullYear();
+        const newMonth = String(date.getMonth() + 1).padStart(2, "0");
+
+        setMonth(`${newYear}-${newMonth}`);
+    };
 
     useEffect(() => {
         const fetchDashboard = async () => {
             try {
-                const response = await api.get("/dashboard?month=2026-08");
+                const response = await api.get(`/dashboard?month=${month}`);
                 setDashboard(response.data);
             } catch (err) {
                 console.error(err);
@@ -22,7 +34,7 @@ function Dashboard() {
         };
 
         fetchDashboard();
-    }, []);
+    }, [month]);
 
     if (loading) {
         return <div className="app loading-state">Loading dashboard...</div>;
@@ -41,6 +53,14 @@ function Dashboard() {
 
     const remaining = totalBudget - totalSpent;
 
+    const displayMonth = new Date(`${month}-01`).toLocaleDateString(
+        "en-IN",
+        {
+            month: "long",
+            year: "numeric",
+        }
+    );
+
     return (
         <div className="app">
             <div className="app-shell">
@@ -54,30 +74,27 @@ function Dashboard() {
                     <header className="dashboard-header">
 
                         <div>
-                            <div className="eyebrow">
-                                FINANCIAL OVERVIEW
-                            </div>
-
+                            
                             <h1 className="dashboard-title">
-                                Welcome back, Test User 2 👋
+                                Financial Overview
                             </h1>
 
                             <p className="dashboard-subtitle">
-                                Here's your financial overview
+                                Keeping an eye on your fincances, as one should!
                             </p>
                         </div>
 
                         <div className="month-controls">
 
-                            <button className="month-button">
+                            <button className="month-button" onClick={() => changeMonth(-1)}>
                                 ‹
                             </button>
 
                             <div className="month-display">
-                                ◫ August 2026
+                                ◫ {displayMonth}
                             </div>
 
-                            <button className="month-button">
+                            <button className="month-button" onClick={() => changeMonth(1)}>
                                 ›
                             </button>
 
