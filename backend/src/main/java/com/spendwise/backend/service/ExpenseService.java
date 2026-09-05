@@ -7,7 +7,9 @@ import com.spendwise.backend.repository.ExpenseRepository;
 import com.spendwise.backend.model.Expense;
 import com.spendwise.backend.dto.ExpenseRequest;
 import com.spendwise.backend.dto.ExpenseResponse;
+import com.spendwise.backend.dto.MonthlySpendingResponse;
 import com.spendwise.backend.dto.MonthlySummaryResponse;
+import com.spendwise.backend.dto.MonthlySpendingResponse;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -197,6 +199,52 @@ public class ExpenseService {
                 totalSpent,
                 categories);
     }
+
+    public List<MonthlySpendingResponse> getMonthlySpending(YearMonth selectedMonth) {
+
+        User currentUser = getCurrentUser();
+
+        YearMonth startMonth = selectedMonth.minusMonths(5);
+
+        LocalDate startDate = startMonth.atDay(1);
+        LocalDate endDate = selectedMonth.plusMonths(1).atDay(1);
+
+        List<Map<String, Object>> monthlyTotals =
+                expenseRepository.getMonthlyTotals(
+                        currentUser.getId(),
+                        startDate,
+                        endDate);
+
+        Map<YearMonth, BigDecimal> totalsByMonth = new HashMap<>();
+
+        for (Map<String, Object> row : monthlyTotals) {
+
+            int year = ((Number) row.get("year")).intValue();
+            int month = ((Number) row.get("month")).intValue();
+
+            BigDecimal total = (BigDecimal) row.get("total");
+
+            totalsByMonth.put(
+                    YearMonth.of(year, month),
+                    total);
+        }
+
+        List<MonthlySpendingResponse> response = new java.util.ArrayList<>();
+
+        for (int i = 0; i < 6; i++) {
+
+            YearMonth month = startMonth.plusMonths(i);
+
+            response.add(
+                    new MonthlySpendingResponse(
+                            month,
+                            totalsByMonth.getOrDefault(
+                                    month,
+                                    BigDecimal.ZERO)));
+        }
+
+        return response;
+}
     
     private User getCurrentUser() {
 

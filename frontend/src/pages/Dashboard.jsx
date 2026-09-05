@@ -130,7 +130,7 @@ function Dashboard() {
                             </div>
 
                             <div className="card-caption">
-                                for August 2026
+                                for {displayMonth}
                             </div>
                         </div>
 

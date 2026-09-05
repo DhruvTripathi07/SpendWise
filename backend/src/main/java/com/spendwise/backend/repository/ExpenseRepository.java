@@ -32,18 +32,18 @@ public interface ExpenseRepository
         LocalDate endDate);
         
      @Query("""
-            SELECT COALESCE(SUM(e.amount), 0)
-            FROM Expense e
-            WHERE e.user.id = :userId
-              AND e.category = :category
-              AND e.date >= :startDate
-              AND e.date < :endDate
-            """)
+                    SELECT COALESCE(SUM(e.amount), 0)
+                    FROM Expense e
+                    WHERE e.user.id = :userId
+                      AND e.category = :category
+                      AND e.date >= :startDate
+                      AND e.date < :endDate
+                    """)
     BigDecimal getTotalSpent(
-            @Param("userId") int userId,
-            @Param("category") String category,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate);
+                    @Param("userId") int userId,
+                    @Param("category") String category,
+                    @Param("startDate") LocalDate startDate,
+                    @Param("endDate") LocalDate endDate);
 
     @Query("""
                     SELECT e.category AS category, COALESCE(SUM(e.amount), 0) AS total
@@ -54,6 +54,22 @@ public interface ExpenseRepository
                     GROUP BY e.category
                     """)
     List<Map<String, Object>> getCategoryTotals(
+                    @Param("userId") int userId,
+                    @Param("startDate") LocalDate startDate,
+                    @Param("endDate") LocalDate endDate);
+
+    @Query("""
+                    SELECT YEAR(e.date) AS year,
+                          MONTH(e.date) AS month,
+                          COALESCE(SUM(e.amount), 0) AS total
+                    FROM Expense e
+                    WHERE e.user.id = :userId
+                      AND e.date >= :startDate
+                      AND e.date < :endDate
+                    GROUP BY YEAR(e.date), MONTH(e.date)
+                    ORDER BY YEAR(e.date), MONTH(e.date)
+                    """)
+    List<Map<String, Object>> getMonthlyTotals(
                     @Param("userId") int userId,
                     @Param("startDate") LocalDate startDate,
                     @Param("endDate") LocalDate endDate);

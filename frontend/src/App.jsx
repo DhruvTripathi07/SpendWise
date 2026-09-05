@@ -3,6 +3,7 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Expenses from "./pages/Expenses";
 import Budgets from "./pages/Budgets";
+import Analytics from "./pages/Analytics";
 
 function App() {
     const token = localStorage.getItem("token");
@@ -37,7 +38,14 @@ function App() {
                 />
 
                 <Route
-                    path="*"
+                    path="/analytics"
+                    element={
+                        token ? <Analytics /> : <Navigate to="/login" replace />
+                    }
+                />
+
+                <Route
+                    path=""
                     element={<Navigate to="/" replace />}
                 />
             </Routes>

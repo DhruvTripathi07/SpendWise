@@ -5,6 +5,7 @@ import com.spendwise.backend.service.ExpenseService;
 import com.spendwise.backend.dto.ExpenseRequest;
 import com.spendwise.backend.dto.ExpenseResponse;
 import com.spendwise.backend.dto.MonthlySummaryResponse;
+import com.spendwise.backend.dto.MonthlySpendingResponse;
 
 import jakarta.validation.Valid;
 
@@ -70,6 +71,13 @@ public class ExpenseController {
             @RequestParam YearMonth month) {
 
         return expenseService.getMonthlySummary(month);
+    }
+
+    @GetMapping("/monthly-spending")
+    public List<MonthlySpendingResponse> getMonthlySpending(
+            @RequestParam YearMonth month) {
+
+        return expenseService.getMonthlySpending(month);
     }
 
     @PutMapping("/{id}")

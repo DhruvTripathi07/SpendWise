@@ -1096,6 +1096,21 @@ button:disabled {
     background: var(--red-soft);
 }
 
+/* =========================================================
+   ANALYTICS
+   ========================================================= */
+
+.analytics-chart {
+    position: relative;
+    height: 320px;
+    margin-top: 20px;
+}
+.analytics-donut {
+    position: relative;
+    height: 260px;
+    margin-top: 20px;
+}
+
 
 /* =========================================================
    FOCUS / ACCESSIBILITY
