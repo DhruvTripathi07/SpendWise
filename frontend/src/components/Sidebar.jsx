@@ -63,11 +63,6 @@ function Sidebar() {
                 </Link>
 
                 <a className="nav-item" href="#">
-                    <span className="nav-icon">⊞</span>
-                    Categories
-                </a>
-
-                <a className="nav-item" href="#">
                     <span className="nav-icon">⚙</span>
                     Settings
                 </a>
