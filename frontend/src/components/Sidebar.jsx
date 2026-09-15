@@ -52,10 +52,15 @@ function Sidebar() {
                     Budgets
                 </Link>
 
-                <a className="nav-item" href="#">
+                <Link
+                    className={`nav-item ${
+                        isActive("/analytics") ? "active" : ""
+                    }`}
+                    to="/analytics"
+                >
                     <span className="nav-icon">⌁</span>
                     Analytics
-                </a>
+                </Link>
 
                 <a className="nav-item" href="#">
                     <span className="nav-icon">⊞</span>

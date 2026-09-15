@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 import Sidebar from "../components/Sidebar";
 import CategorySpendingChart from "../components/CategorySpendingChart";
+import SixMonthSpendingChart from "../components/SixMonthSpendingChart";
+import BudgetVsActualChart from "../components/BudgetVsActualChart";
+import QuickInsights from "../components/QuickInsights";
 import "../App.css";
 import DailySpendingChart from "../components/DailySpendingChart";
 
@@ -10,6 +13,7 @@ function Analytics() {
     const [expenses, setExpenses] = useState([]);
     const [summary, setSummary] = useState(null);
     const [monthlySpending, setMonthlySpending] = useState([]);
+    const [budgets, setBudgets] = useState([]);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -34,16 +38,19 @@ function Analytics() {
             setError("");
 
             try {
-                const [expensesResponse, summaryResponse, monthlyResponse] =
+                const [expensesResponse, summaryResponse, monthlyResponse, budgetsResponse] =
                     await Promise.all([
                         api.get(`/expenses?month=${month}`),
                         api.get(`/expenses/summary?month=${month}`),
                         api.get(`/expenses/monthly-spending?month=${month}`),
+                        api.get(`/budgets?month=${month}`),
                     ]);
 
                 setExpenses(expensesResponse.data);
                 setSummary(summaryResponse.data);
                 setMonthlySpending(monthlyResponse.data);
+                setBudgets(budgetsResponse.data);
+                console.log("ANALYTICS BUDGETS:", budgetsResponse.data);
             } catch (err) {
                 console.error(err);
                 setError("Failed to load analytics.");
@@ -210,8 +217,40 @@ function Analytics() {
                         </div>
 
                         <div className="analytics-placeholder">
-                            Six-month bar chart goes here.
+                            <SixMonthSpendingChart
+                                monthlySpending={monthlySpending}
+                            />
                         </div>
+                    </section>
+                    <section className="recent-card">
+                        <div className="section-heading">
+                            <div>
+                                <h2>Budget vs Actual</h2>
+                                <p>
+                                    See how your spending compares with your budgets
+                                </p>
+                            </div>
+                        </div>
+
+                        <BudgetVsActualChart
+                            budgets={budgets}
+                        />
+                    </section>
+                    <section className="recent-card">
+                        <div className="section-heading">
+                            <div>
+                                <h2>Quick Insights</h2>
+                                <p>
+                                    A few things worth knowing about your spending
+                                </p>
+                            </div>
+                        </div>
+
+                        <QuickInsights
+                            expenses={expenses}
+                            summary={summary}
+                            budgets={budgets}
+                        />
                     </section>
 
                     <p style={{ display: "none" }}>
