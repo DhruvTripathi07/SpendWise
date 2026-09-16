@@ -1359,41 +1359,6 @@ button:disabled {
     opacity: 0.85;
 }
 
-.login-trajectory {
-    width: 100%;
-    height: 100%;
-
-    display: block;
-}
-
-/* Trajectory lines */
-
-.trajectory {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.4;
-    vector-effect: non-scaling-stroke;
-
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.trajectory-green {
-    color: var(--green);
-    opacity: 0.16;
-}
-
-.trajectory-silver {
-    color: var(--silver);
-    opacity: 0.08;
-}
-
-.trajectory-purple {
-    color: var(--purple);
-    opacity: 0.09;
-}
-
-
 /* Login content */
 
 .login-content {
@@ -1423,15 +1388,12 @@ button:disabled {
 .login-logo {
     width: 64px;
     height: 44px;
-
     margin-bottom: 10px;
-
     color: var(--silver-bright);
 
     filter:
-        drop-shadow(
-            0 0 8px rgba(66, 220, 162, 0.08)
-        );
+        drop-shadow(0 0 7px rgba(66, 220, 162, 0.35))
+        drop-shadow(0 0 18px rgba(66, 220, 162, 0.18));
 }
 
 .login-logo svg {
@@ -1441,21 +1403,28 @@ button:disabled {
 
 .login-brand h1 {
     margin: 0;
-
     font-size: 30px;
     font-weight: 600;
     letter-spacing: -0.7px;
-
     color: var(--text-primary);
+
+    text-shadow:
+        0 0 8px rgba(66, 220, 162, 0.22),
+        0 0 20px rgba(66, 220, 162, 0.10);
 }
 
-.login-brand p {
-    margin: 6px 0 0;
+.login-brand {
+    position: relative;
+    z-index: 3;
 
-    font-size: 12px;
-    letter-spacing: 0.8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 
-    color: var(--text-muted);
+    filter:
+        drop-shadow(0 0 8px rgba(66, 220, 162, 0.18))
+        drop-shadow(0 0 22px rgba(66, 220, 162, 0.10));
 }
 
 
@@ -1581,7 +1550,6 @@ button:disabled {
 
 .login-button {
     width: 100%;
-
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1589,17 +1557,11 @@ button:disabled {
 
     padding: 12px 16px;
 
-    border: 1px solid rgba(66, 220, 162, 0.45);
+    border: 1px solid rgba(66, 220, 162, 0.32);
     border-radius: var(--radius-sm);
 
-    background:
-        linear-gradient(
-            135deg,
-            rgba(66, 220, 162, 0.18),
-            rgba(66, 220, 162, 0.08)
-        );
-
-    color: var(--text-primary);
+    background: #17251f;
+    color: #dfe8e3;
 
     font-size: 13px;
     font-weight: 500;
@@ -1612,30 +1574,47 @@ button:disabled {
         box-shadow 0.25s ease,
         transform 0.25s ease;
 }
-
 .login-button span {
     font-size: 16px;
     line-height: 1;
+    color: var(--green-soft);
 }
 
 .login-button:hover {
-    border-color: rgba(66, 220, 162, 0.7);
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(66, 220, 162, 0.24),
-            rgba(66, 220, 162, 0.10)
-        );
+    border-color: rgba(66, 220, 162, 0.55);
+    background: #194431;
 
     box-shadow:
-        0 0 20px rgba(66, 220, 162, 0.08);
+        0 0 16px rgba(66, 220, 162, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
 
     transform: translateY(-1px);
 }
 
 .login-button:active {
     transform: translateY(0);
+    background: #15231e;
+}
+
+.login-signup {
+    margin: 18px 0 0;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.login-signup button {
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--green-soft);
+    font: inherit;
+    cursor: pointer;
+}
+
+.login-signup button:hover {
+    color: var(--green);
+    text-decoration: underline;
 }
 
 /* =========================================================

@@ -29,87 +29,6 @@ function Login() {
     return (
         <div className="login-page">
 
-            {/* Animated financial background */}
-            <div className="login-background" aria-hidden="true">
-                <svg
-                    className="login-trajectory"
-                    viewBox="0 0 1440 900"
-                    preserveAspectRatio="none"
-                >
-                    <defs>
-                        <marker
-                            id="green-arrow"
-                            markerWidth="10"
-                            markerHeight="10"
-                            refX="8"
-                            refY="5"
-                            orient="auto"
-                        >
-                            <path
-                                d="M 0 0 L 10 5 L 0 10 z"
-                                fill="currentColor"
-                            />
-                        </marker>
-
-                        <marker
-                            id="purple-arrow"
-                            markerWidth="10"
-                            markerHeight="10"
-                            refX="8"
-                            refY="5"
-                            orient="auto"
-                        >
-                            <path
-                                d="M 0 0 L 10 5 L 0 10 z"
-                                fill="currentColor"
-                            />
-                        </marker>
-                    </defs>
-
-                    {/* Main green trajectory */}
-                    <path
-                        className="trajectory trajectory-green"
-                        d="M -80 650
-                        L 170 610
-                        L 290 690
-                        L 470 430
-                        L 650 500
-                        L 820 670
-                        L 1010 520
-                        L 1190 330
-                        L 1520 120"
-                        markerEnd="url(#green-arrow)"
-                    />
-
-                    {/* Secondary silver trajectory */}
-                    <path
-                        className="trajectory trajectory-silver"
-                        d="M -100 260
-                        L 150 300
-                        L 310 220
-                        L 500 330
-                        L 690 250
-                        L 880 390
-                        L 1080 270
-                        L 1510 340"
-                    />
-
-                    {/* Subtle purple trajectory */}
-                    <path
-                        className="trajectory trajectory-purple"
-                        d="M -100 760
-                        L 220 720
-                        L 400 790
-                        L 610 650
-                        L 820 710
-                        L 1040 600
-                        L 1250 680
-                        L 1510 540"
-                        markerEnd="url(#purple-arrow)"
-                    />
-                </svg>
-            </div>
-
             {/* Login content */}
             <main className="login-content">
 
@@ -226,9 +145,11 @@ function Login() {
                             className="login-button"
                         >
                             Login
-                            <span>→</span>
                         </button>
 
+                        <p className="login-signup">
+                            Don't have an account? <button type="button">Sign Up</button>
+                        </p>
                     </form>
 
                 </section>
