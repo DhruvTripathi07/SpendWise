@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Expenses from "./pages/Expenses";
 import Budgets from "./pages/Budgets";
 import Analytics from "./pages/Analytics";
+import Signup from "./pages/Signup";
 
 function App() {
     const token = localStorage.getItem("token");
@@ -14,6 +15,11 @@ function App() {
                 <Route
                     path="/login"
                     element={token ? <Navigate to="/" replace /> : <Login />}
+                />
+
+                <Route
+                    path="/signup"
+                    element={token ? <Navigate to="/" replace /> : <Signup />}
                 />
 
                 <Route

@@ -1,7 +1,24 @@
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import api from "../services/api";
 
 function Sidebar() {
     const location = useLocation();
+
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const response = await api.get("/auth/me");
+                setUser(response.data);
+            } catch (error) {
+                console.error("Failed to fetch current user:", error);
+            }
+        };
+
+        fetchUser();
+    }, []);
 
     const isActive = (path) => location.pathname === path;
 
@@ -71,15 +88,24 @@ function Sidebar() {
             <div className="sidebar-bottom">
                 <div className="user-card">
                     <div className="user-info">
-                        <div className="avatar">T2</div>
+                        <div className="avatar">
+                            {user?.name
+                                ? user.name
+                                    .split(" ")
+                                    .map((part) => part[0])
+                                    .join("")
+                                    .slice(0, 2)
+                                    .toUpperCase()
+                                : "U"}
+                        </div>
 
                         <div>
                             <div className="user-name">
-                                Test User 2
+                                {user?.name || "User"}
                             </div>
 
                             <div className="user-email">
-                                test2@spendwise.com
+                                {user?.email || ""}
                             </div>
                         </div>
                     </div>

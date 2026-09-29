@@ -7,7 +7,14 @@ function Dashboard() {
     const [dashboard, setDashboard] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [month, setMonth] = useState("2026-08");
+
+    const getCurrentMonth = () => {
+            const now = new Date();
+
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+        };
+
+    const [month, setMonth] = useState(getCurrentMonth());
 
     const changeMonth = (amount) => {
         const [year, currentMonth] = month.split("-");

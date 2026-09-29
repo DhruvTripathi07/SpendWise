@@ -148,7 +148,15 @@ function Login() {
                         </button>
 
                         <p className="login-signup">
-                            Don't have an account? <button type="button">Sign Up</button>
+                            Don't have an account? 
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    window.location.href = "/signup";
+                                }}
+                            >
+                                Sign Up
+                            </button>
                         </p>
                     </form>
 
