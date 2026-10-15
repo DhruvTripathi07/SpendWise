@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
 import Sidebar from "../components/Sidebar";
 import ExpenseFilters from "../components/expenses/ExpenseFilters";
 import ExpenseForm from "../components/expenses/ExpenseForm";
+import { formatCurrency } from "../utils/currency";
 import "../App.css";
 
 function Expenses() {
@@ -14,8 +15,12 @@ function Expenses() {
     const [formError, setFormError] = useState("");
     const [editingExpense, setEditingExpense] = useState(null);
     const [deletingExpense, setDeletingExpense] = useState(null);
+    const getCurrentMonth = () => {
+        const now = new Date();
 
-    const [month, setMonth] = useState("2026-08");
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    };
+    const [month, setMonth] = useState(getCurrentMonth());
     const [category, setCategory] = useState("");
 
     //Adding an Expense
@@ -78,7 +83,7 @@ function Expenses() {
         }
     };
 
-    const fetchExpenses = async () => {
+    const fetchExpenses = useCallback(async () => {
         setLoading(true);
         setError("");
 
@@ -94,7 +99,7 @@ function Expenses() {
             }
 
             const response = await api.get("/expenses", {
-                params
+                params,
             });
 
             setExpenses(response.data);
@@ -104,18 +109,18 @@ function Expenses() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [month, category]);
 
     useEffect(() => {
         fetchExpenses();
-    }, [month, category]);
+    }, [fetchExpenses]);
 
     const categories = [
         ...new Set(expenses.map((expense) => expense.category))
     ];
 
     const resetFilters = () => {
-        setMonth("2026-08");
+        setMonth(getCurrentMonth());
         setCategory("");
     };
 
@@ -243,9 +248,7 @@ function Expenses() {
                                             </td>
 
                                             <td className="expense-amount">
-                                                ₹{Number(
-                                                    expense.amount
-                                                ).toLocaleString("en-IN")}
+                                                {formatCurrency(expense.amount)}
                                             </td>
 
                                             <td className="expense-actions">

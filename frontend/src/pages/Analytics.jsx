@@ -5,11 +5,16 @@ import CategorySpendingChart from "../components/CategorySpendingChart";
 import SixMonthSpendingChart from "../components/SixMonthSpendingChart";
 import BudgetVsActualChart from "../components/BudgetVsActualChart";
 import QuickInsights from "../components/QuickInsights";
+import { formatCurrency } from "../utils/currency";
 import "../App.css";
 import DailySpendingChart from "../components/DailySpendingChart";
 
 function Analytics() {
-    const [month, setMonth] = useState("2026-08");
+    const getCurrentMonth = () => {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    };
+    const [month, setMonth] = useState(getCurrentMonth());
     const [expenses, setExpenses] = useState([]);
     const [summary, setSummary] = useState(null);
     const [monthlySpending, setMonthlySpending] = useState([]);
@@ -50,7 +55,6 @@ function Analytics() {
                 setSummary(summaryResponse.data);
                 setMonthlySpending(monthlyResponse.data);
                 setBudgets(budgetsResponse.data);
-                console.log("ANALYTICS BUDGETS:", budgetsResponse.data);
             } catch (err) {
                 console.error(err);
                 setError("Failed to load analytics.");
@@ -123,10 +127,7 @@ function Analytics() {
                             </span>
 
                             <div className="summary-value">
-                                ₹
-                                {Number(
-                                    summary?.totalSpent || 0
-                                ).toLocaleString("en-IN")}
+                                {formatCurrency(summary?.totalSpent || 0)}
                             </div>
 
                             <span className="summary-caption">
@@ -154,16 +155,10 @@ function Analytics() {
                             </span>
 
                             <div className="summary-value">
-                                ₹
-                                {(
+                                {formatCurrency(
                                     Number(summary?.totalSpent || 0) /
-                                    Math.max(
-                                        expenses.length,
-                                        1
-                                    )
-                                ).toLocaleString("en-IN", {
-                                    maximumFractionDigits: 0,
-                                })}
+                                    Math.max(expenses.length, 1)
+                                )}
                             </div>
 
                             <span className="summary-caption">
@@ -252,10 +247,6 @@ function Analytics() {
                             budgets={budgets}
                         />
                     </section>
-
-                    <p style={{ display: "none" }}>
-                        {monthlySpending.length}
-                    </p>
                 </main>
             </div>
         </div>

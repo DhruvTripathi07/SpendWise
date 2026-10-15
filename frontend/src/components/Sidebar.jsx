@@ -79,10 +79,15 @@ function Sidebar() {
                     Analytics
                 </Link>
 
-                <a className="nav-item" href="#">
+                <Link
+                    className={`nav-item ${
+                        isActive("/settings") ? "active" : ""
+                    }`}
+                    to="/settings"
+                >
                     <span className="nav-icon">⚙</span>
                     Settings
-                </a>
+                </Link>
             </nav>
 
             <div className="sidebar-bottom">

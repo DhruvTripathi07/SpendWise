@@ -7,6 +7,7 @@ import {
 } from "chart.js";
 
 import { Bar } from "react-chartjs-2";
+import { formatCurrency } from "../utils/currency";
 
 ChartJS.register(
     CategoryScale,
@@ -69,10 +70,7 @@ function BudgetVsActualChart({ budgets }) {
 
             tooltip: {
                 callbacks: {
-                    label: (context) =>
-                        ` ${context.dataset.label}: ₹${Number(
-                            context.parsed.y
-                        ).toLocaleString("en-IN")}`,
+                    label: (context) =>formatCurrency(context.parsed.y),
                 },
             },
         },
@@ -98,8 +96,7 @@ function BudgetVsActualChart({ budgets }) {
                 ticks: {
                     color: "#737981",
 
-                    callback: (value) =>
-                        `₹${Number(value).toLocaleString("en-IN")}`,
+                    callback: (value) => formatCurrency(value),
                 },
             },
         },

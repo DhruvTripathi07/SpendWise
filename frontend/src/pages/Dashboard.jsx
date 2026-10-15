@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import { formatCurrency } from "../utils/currency";
 import Sidebar from "../components/Sidebar";
 import "../App.css";
 
@@ -119,7 +120,7 @@ function Dashboard() {
                             </div>
 
                             <div className="money">
-                                ₹{totalSpent.toLocaleString("en-IN")}
+                                {formatCurrency(totalSpent)}
                             </div>
 
                             <div className="card-caption">
@@ -133,7 +134,7 @@ function Dashboard() {
                             </div>
 
                             <div className="money">
-                                ₹{totalBudget.toLocaleString("en-IN")}
+                                {formatCurrency(totalBudget)}
                             </div>
 
                             <div className="card-caption">
@@ -147,7 +148,7 @@ function Dashboard() {
                             </div>
 
                             <div className="money accent">
-                                ₹{remaining.toLocaleString("en-IN")}
+                                {formatCurrency(remaining)}
                             </div>
 
                             <div className="card-caption">
@@ -190,7 +191,7 @@ function Dashboard() {
                                             </div>
 
                                             <div className="donut-total">
-                                                ₹{totalSpent.toLocaleString("en-IN")}
+                                                {formatCurrency(totalSpent)}
                                             </div>
 
                                         </div>
@@ -236,7 +237,7 @@ function Dashboard() {
                                                     </span>
 
                                                     <span className="category-amount">
-                                                        ₹{Number(amount).toLocaleString("en-IN")}
+                                                        {formatCurrency(amount)}
                                                     </span>
 
                                                     <span className="category-percent">
@@ -296,9 +297,9 @@ function Dashboard() {
                                                 </span>
 
                                                 <span className="budget-value">
-                                                    ₹{Number(budget.spent).toLocaleString("en-IN")}
+                                                    {formatCurrency(budget.spent)}
                                                     {" / "}
-                                                    ₹{Number(budget.amount).toLocaleString("en-IN")}
+                                                    {formatCurrency(budget.amount)}
                                                 </span>
 
                                             </div>
@@ -319,21 +320,13 @@ function Dashboard() {
                                             </div>
 
                                             <div className="budget-bottom">
-
                                                 <span className="budget-remaining">
-                                                    ₹{Number(
-                                                        budget.remaining
-                                                    ).toLocaleString("en-IN")}{" "}
-                                                    remaining
+                                                    {formatCurrency(budget.remaining)} remaining
                                                 </span>
 
                                                 <span className="budget-percent">
-                                                    {Number(
-                                                        budget.progress ??
-                                                        0
-                                                    ).toFixed(2)}%
+                                                    {Number(budget.progress ?? 0).toFixed(2)}%
                                                 </span>
-
                                             </div>
 
                                         </div>
@@ -412,11 +405,8 @@ function Dashboard() {
                                         </td>
 
                                         <td className="expense-amount">
-                                            ₹{Number(
-                                                expense.amount
-                                            ).toLocaleString("en-IN")}
+                                            {formatCurrency(expense.amount)}
                                         </td>
-
                                     </tr>
 
                                 ))}

@@ -1,3 +1,5 @@
+import { formatCurrency } from "../utils/currency";
+
 function QuickInsights({ expenses, summary, budgets }) {
 
     const totalSpent = Number(summary?.totalSpent || 0);
@@ -33,10 +35,7 @@ function QuickInsights({ expenses, summary, budgets }) {
         (budget) => budget.overBudget
     ).length;
 
-    const formatAmount = (amount) =>
-        `₹${Number(amount).toLocaleString("en-IN", {
-            maximumFractionDigits: 0,
-        })}`;
+    const formatAmount = (amount) => formatCurrency(amount);
 
     return (
         <div className="quick-insights">
@@ -82,7 +81,7 @@ function QuickInsights({ expenses, summary, budgets }) {
                 <strong className="insight-value">
                     {highestExpense
                         ? formatAmount(highestExpense.amount)
-                        : "₹0"}
+                        : formatCurrency(0)}
                 </strong>
 
                 <span className="insight-caption">

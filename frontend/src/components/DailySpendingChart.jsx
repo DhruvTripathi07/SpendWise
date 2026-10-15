@@ -9,6 +9,7 @@ import {
 } from "chart.js";
 
 import { Line } from "react-chartjs-2";
+import { formatCurrency } from "../utils/currency";
 
 ChartJS.register(
     CategoryScale,
@@ -71,10 +72,7 @@ function DailySpendingChart({ expenses, month }) {
 
             tooltip: {
                 callbacks: {
-                    label: (context) =>
-                        ` ₹${Number(
-                            context.parsed.y
-                        ).toLocaleString("en-IN")}`,
+                    label: (context) =>formatCurrency(context.parsed.y),
                 },
             },
         },
@@ -108,8 +106,7 @@ function DailySpendingChart({ expenses, month }) {
                 ticks: {
                     color: "#737981",
 
-                    callback: (value) =>
-                        `₹${Number(value).toLocaleString("en-IN")}`,
+                    callback: (value) =>formatCurrency(value),
                 },
             },
         },

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 import Sidebar from "../components/Sidebar";
 import BudgetForm from "../components/budgets/BudgetForm";
+import { formatCurrency } from "../utils/currency";
 import "../App.css";
 
 function Budgets() {
@@ -199,15 +200,15 @@ function Budgets() {
                                                 </td>
 
                                                 <td>
-                                                    ₹{Number(budget.amount).toLocaleString("en-IN")}
+                                                    {formatCurrency(budget.amount)}
                                                 </td>
 
                                                 <td>
-                                                    ₹{Number(budget.spent).toLocaleString("en-IN")}
+                                                    {formatCurrency(budget.spent)}
                                                 </td>
 
                                                 <td>
-                                                    ₹{Number(budget.remaining).toLocaleString("en-IN")}
+                                                    {formatCurrency(budget.remaining)}
                                                 </td>
 
                                                 <td>

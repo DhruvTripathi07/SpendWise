@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getCurrency } from "../../utils/currency";
 
 function BudgetForm({
     budget,
@@ -107,7 +108,7 @@ function BudgetForm({
                         </label>
 
                         <div className="amount-input">
-                            <span>₹</span>
+                            <span>{getCurrency().symbol}</span>
 
                             <input
                                 id="budget-amount"

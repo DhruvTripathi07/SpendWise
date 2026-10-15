@@ -5,6 +5,7 @@ import Expenses from "./pages/Expenses";
 import Budgets from "./pages/Budgets";
 import Analytics from "./pages/Analytics";
 import Signup from "./pages/Signup";
+import Settings from "./pages/Settings";
 
 function App() {
     const token = localStorage.getItem("token");
@@ -51,8 +52,10 @@ function App() {
                 />
 
                 <Route
-                    path=""
-                    element={<Navigate to="/" replace />}
+                    path="/settings"
+                    element={
+                        token ? <Settings /> : <Navigate to="/login" replace />
+                    }
                 />
             </Routes>
         </BrowserRouter>

@@ -6,6 +6,7 @@ import {
 } from "chart.js";
 
 import { Doughnut } from "react-chartjs-2";
+import { formatCurrency } from "../utils/currency";
 
 ChartJS.register(
     ArcElement,
@@ -57,13 +58,7 @@ function CategorySpendingChart({ categories }) {
 
             tooltip: {
                 callbacks: {
-                    label: (context) => {
-                        const value = Number(
-                            context.raw
-                        ).toLocaleString("en-IN");
-
-                        return ` ₹${value}`;
-                    },
+                    label: (context) => formatCurrency(context.raw),
                 },
             },
         },
