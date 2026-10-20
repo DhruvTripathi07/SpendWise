@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
-import Sidebar from "../components/Sidebar";
+import AppLayout from "../components/AppLayout";
 import ExpenseFilters from "../components/expenses/ExpenseFilters";
 import ExpenseForm from "../components/expenses/ExpenseForm";
 import { formatCurrency } from "../utils/currency";
-import "../App.css";
+
 
 function Expenses() {
     const [expenses, setExpenses] = useState([]);
@@ -125,13 +125,7 @@ function Expenses() {
     };
 
     return (
-        <div className="app">
-            <div className="app-shell">
-
-                <Sidebar />
-
-                <main className="main-content">
-
+        <AppLayout>
                     <header className="dashboard-header">
 
                         <div>
@@ -280,10 +274,6 @@ function Expenses() {
                         )}
 
                     </section>
-
-                </main>
-
-            </div>
             {(showForm || editingExpense) && (
                 <ExpenseForm
                     expense={editingExpense}
@@ -350,7 +340,7 @@ function Expenses() {
                     </div>
                 </div>
             )}
-        </div>
+        </AppLayout>
     );
 }
 

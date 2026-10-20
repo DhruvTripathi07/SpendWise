@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
-import Sidebar from "../components/Sidebar";
+import AppLayout from "../components/AppLayout";
 import CategorySpendingChart from "../components/CategorySpendingChart";
 import SixMonthSpendingChart from "../components/SixMonthSpendingChart";
 import BudgetVsActualChart from "../components/BudgetVsActualChart";
@@ -75,19 +75,15 @@ function Analytics() {
     );
 
     if (loading) {
-        return <div className="app">Loading analytics...</div>;
+        return <AppLayout>Loading analytics...</AppLayout>;
     }
 
     if (error) {
-        return <div className="app">{error}</div>;
+        return <AppLayout>{error}</AppLayout>;
     }
 
     return (
-        <div className="app">
-            <div className="app-shell">
-                <Sidebar />
-
-                <main className="main-content">
+        <AppLayout>
                     <header className="dashboard-header">
                         <div>
                             <h1 className="dashboard-title">
@@ -247,9 +243,7 @@ function Analytics() {
                             budgets={budgets}
                         />
                     </section>
-                </main>
-            </div>
-        </div>
+        </AppLayout>
     );
 }
 

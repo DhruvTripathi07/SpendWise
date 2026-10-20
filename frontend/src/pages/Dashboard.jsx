@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import { formatCurrency } from "../utils/currency";
-import Sidebar from "../components/Sidebar";
-import "../App.css";
+import AppLayout from "../components/AppLayout";
 
 function Dashboard() {
     const [dashboard, setDashboard] = useState(null);
@@ -70,12 +69,7 @@ function Dashboard() {
     );
 
     return (
-        <div className="app">
-            <div className="app-shell">
-
-                <Sidebar />
-
-                <main className="main-content">
+        <AppLayout>
 
                     {/* Dashboard Header */}
 
@@ -417,10 +411,7 @@ function Dashboard() {
 
                     </section>
 
-                </main>
-
-            </div>
-        </div>
+                </AppLayout>
     );
 }
 

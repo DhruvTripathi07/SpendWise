@@ -103,6 +103,22 @@ button:disabled {
     min-height: 100vh;
 }
 
+.app-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.app-content .main-content {
+    flex: 1;
+    width: 100%;
+}
+
+.app-footer {
+    margin-top: auto;
+}
+
 
 /* =========================================================
    SIDEBAR
@@ -1693,6 +1709,12 @@ button:disabled {
     transform: translateY(-1px);
 }
 
+.settings-card.development-card:hover {
+    border-color: #171b1e;
+    box-shadow: none;
+    transform: none;
+}
+
 .settings-field + .settings-field {
     margin-top: 24px;
 }
@@ -1806,6 +1828,59 @@ button:disabled {
         align-items: stretch;
         min-width: 0;
     }
+}
+/* Under Development */
+
+.development-card {
+    padding: 8px 24px;
+}
+
+.development-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 17px 0;
+    color: #686e74;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.development-item + .development-item {
+    border-top: 1px solid #15191c;
+}
+
+.development-badge {
+    flex-shrink: 0;
+    padding: 4px 9px;
+    border: 1px solid #1b1f22;
+    border-radius: 20px;
+    background: #0b0d0f;
+    color: #555b61;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+}
+
+@media (max-width: 480px) {
+    .development-card {
+        padding: 8px 16px;
+    }
+
+    .development-item {
+        font-size: 12px;
+    }
+}
+
+/* Application Footer */
+
+.app-footer {
+    padding: 20px 24px;
+    border-top: 1px solid var(--border-soft);
+    color: var(--text-dim);
+    font-size: 11px;
+    line-height: 1.6;
+    text-align: center;
 }
 
 /* =========================================================

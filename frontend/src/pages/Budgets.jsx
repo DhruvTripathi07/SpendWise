@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
-import Sidebar from "../components/Sidebar";
+import AppLayout from "../components/AppLayout";
 import BudgetForm from "../components/budgets/BudgetForm";
 import { formatCurrency } from "../utils/currency";
 import "../App.css";
@@ -101,13 +101,7 @@ function Budgets() {
     }, []);
 
     return (
-        <div className="app">
-            <div className="app-shell">
-
-                <Sidebar />
-
-                <main className="main-content">
-
+        <AppLayout>
                     <header className="dashboard-header">
 
                         <div>
@@ -271,10 +265,6 @@ function Budgets() {
                         )}
 
                     </section>
-
-                </main>
-
-            </div>
             {(showForm || editingBudget) && (
                 <BudgetForm
                     budget={editingBudget}
@@ -345,7 +335,7 @@ function Budgets() {
                     </div>
                 </div>
             )}
-        </div>
+        </AppLayout>
     );
 }
 

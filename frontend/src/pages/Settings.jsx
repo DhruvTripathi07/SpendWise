@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Sidebar from "../components/Sidebar";
+import AppLayout from "../components/AppLayout";
 import CURRENCIES, { getCurrency } from "../utils/currency";
 import api from "../services/api";
 import "../App.css";
@@ -31,13 +31,7 @@ function Settings() {
         fetchUser();
     }, []);
     return (
-        <div className="app">
-            <div className="app-shell">
-
-                <Sidebar />
-
-                <main className="main-content">
-
+        <AppLayout>
                     <header className="dashboard-header">
                         <div>
                             <h1 className="dashboard-title">
@@ -102,9 +96,40 @@ function Settings() {
                             </div>
                         </div>
                     </section>
-                </main>
-            </div>
-        </div>
+                    <section className="settings-section">
+                        <div className="settings-section-heading">
+                            <h2>Under Development</h2>
+                            <p>More ways to manage and personalize your finances are on the way.</p>
+                        </div>
+
+                        <div className="settings-card development-card">
+                            <div className="development-item">
+                                <span>Email verification</span>
+                                <span className="development-badge">Planned</span>
+                            </div>
+
+                            <div className="development-item">
+                                <span>Password recovery</span>
+                                <span className="development-badge">Planned</span>
+                            </div>
+
+                            <div className="development-item">
+                                <span>Advanced account management</span>
+                                <span className="development-badge">Planned</span>
+                            </div>
+
+                            <div className="development-item">
+                                <span>Notifications</span>
+                                <span className="development-badge">Planned</span>
+                            </div>
+
+                            <div className="development-item">
+                                <span>More personalization</span>
+                                <span className="development-badge">Planned</span>
+                            </div>
+                        </div>
+                    </section>
+        </AppLayout>
     );
 }
 
