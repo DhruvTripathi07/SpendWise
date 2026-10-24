@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import api from "../services/api";
 
-function Sidebar() {
+function Sidebar({ onNavigate }) {
     const location = useLocation();
 
     const [user, setUser] = useState(null);
@@ -44,6 +44,7 @@ function Sidebar() {
                 <Link
                     className={`nav-item ${isActive("/") ? "active" : ""}`}
                     to="/"
+                    onClick={onNavigate}
                 >
                     <span className="nav-icon">▣</span>
                     Dashboard
@@ -54,6 +55,7 @@ function Sidebar() {
                         isActive("/expenses") ? "active" : ""
                     }`}
                     to="/expenses"
+                    onClick={onNavigate}
                 >
                     <span className="nav-icon">▱</span>
                     Expenses
@@ -64,6 +66,7 @@ function Sidebar() {
                         isActive("/budgets") ? "active" : ""
                     }`}
                     to="/budgets"
+                    onClick={onNavigate}
                 >
                     <span className="nav-icon">◷</span>
                     Budgets
@@ -74,6 +77,7 @@ function Sidebar() {
                         isActive("/analytics") ? "active" : ""
                     }`}
                     to="/analytics"
+                    onClick={onNavigate}
                 >
                     <span className="nav-icon">⌁</span>
                     Analytics
@@ -84,6 +88,7 @@ function Sidebar() {
                         isActive("/settings") ? "active" : ""
                     }`}
                     to="/settings"
+                    onClick={onNavigate}
                 >
                     <span className="nav-icon">⚙</span>
                     Settings

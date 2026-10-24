@@ -117,6 +117,12 @@ button:disabled {
 
 .app-footer {
     margin-top: auto;
+    padding: 20px 24px;
+    border-top: 1px solid var(--border-soft);
+    color: var(--text-dim);
+    font-size: 11px;
+    line-height: 1.6;
+    text-align: center;
 }
 
 
@@ -521,7 +527,7 @@ button:disabled {
 
 .content-grid {
     display: grid;
-    grid-template-columns: 1.05fr 1fr;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 4fr) minmax(0, 2fr);
     gap: 16px;
     margin-bottom: 20px;
 }
@@ -714,6 +720,137 @@ button:disabled {
     color: var(--green);
     font-size: 11px;
     font-variant-numeric: tabular-nums;
+}
+
+/* Monthly Insights */
+
+.monthly-insights-card {
+    min-width: 0;
+    margin-bottom: 20px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    transition: border-color var(--transition);
+}
+
+.monthly-insights-card.expanded {
+    border-color: #315b49;
+}
+
+.monthly-insights-header {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.monthly-insights-subtitle {
+    margin-top: 7px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.insights-toggle {
+    flex-shrink: 0;
+    padding: 8px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--green-soft);
+    font-size: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.insights-toggle:hover {
+    border-color: var(--green-soft);
+    background: var(--green-dark);
+}
+
+.monthly-insights-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.monthly-insights-card.expanded .monthly-insights-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.monthly-insight-item {
+    min-width: 0;
+    padding: 17px;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    background: var(--bg-card-alt);
+}
+
+.monthly-insight-content h3 {
+    overflow-wrap: anywhere;
+    margin: 0 0 10px;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.monthly-insight-content > p,
+.monthly-insight-recommendation p {
+    overflow-wrap: anywhere;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.monthly-insight-recommendation {
+    margin-top: 16px;
+    padding-top: 13px;
+    border-top: 1px solid var(--border-soft);
+}
+
+.monthly-insight-recommendation span {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--green-soft);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+}
+
+.monthly-insights-empty {
+    margin: 0;
+    padding: 18px;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+    .monthly-insights-list,
+    .monthly-insights-card.expanded .monthly-insights-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .monthly-insights-card {
+        padding: 17px;
+    }
+
+    .monthly-insights-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .monthly-insights-list,
+    .monthly-insights-card.expanded .monthly-insights-list {
+        grid-template-columns: 1fr;
+    }
 }
 
 
@@ -1255,18 +1392,6 @@ button:disabled {
     color: var(--text-muted);
 }
 
-.analytics-chart {
-    position: relative;
-    height: 320px;
-    margin-top: 20px;
-}
-
-.analytics-donut {
-    position: relative;
-    height: 260px;
-    margin-top: 20px;
-}
-
 .analytics-bar-chart {
     position: relative;
     height: 300px;
@@ -1423,11 +1548,15 @@ button:disabled {
 /* Brand */
 
 .login-brand {
+    position: relative;
+    z-index: 3;
     display: flex;
     flex-direction: column;
     align-items: center;
-
     text-align: center;
+    filter:
+        drop-shadow(0 0 8px rgba(66, 220, 162, 0.18))
+        drop-shadow(0 0 22px rgba(66, 220, 162, 0.10));
 }
 
 .login-logo {
@@ -1456,20 +1585,6 @@ button:disabled {
     text-shadow:
         0 0 8px rgba(66, 220, 162, 0.22),
         0 0 20px rgba(66, 220, 162, 0.10);
-}
-
-.login-brand {
-    position: relative;
-    z-index: 3;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-
-    filter:
-        drop-shadow(0 0 8px rgba(66, 220, 162, 0.18))
-        drop-shadow(0 0 22px rgba(66, 220, 162, 0.10));
 }
 
 
@@ -1662,7 +1777,9 @@ button:disabled {
     text-decoration: underline;
 }
 
-/* Settings */
+/* =========================================================
+   SETTINGS
+   ========================================================= */
 
 .settings-section {
     margin-top: 12px;
@@ -1734,23 +1851,15 @@ button:disabled {
 .settings-select {
     width: 100%;
     max-width: 360px;
-    padding: 11px 12px;
-
+    padding: 12px 14px;
     background: var(--bg-input);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
-
     color: var(--text-primary);
     font-size: 13px;
-
     outline: none;
     cursor: pointer;
-
-    transition: border-color 0.2s ease;
-}
-
-.settings-select:focus {
-    border-color: rgba(66, 220, 162, 0.45);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .settings-help {
@@ -1789,19 +1898,6 @@ button:disabled {
     min-width: 240px;
 }
 
-.settings-select {
-    width: 100%;
-    padding: 12px 14px;
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text-primary);
-    font-size: 13px;
-    outline: none;
-    cursor: pointer;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
 .settings-select:focus {
     border-color: rgba(66, 220, 162, 0.5);
     box-shadow: 0 0 0 3px rgba(66, 220, 162, 0.06);
@@ -1829,7 +1925,9 @@ button:disabled {
         min-width: 0;
     }
 }
-/* Under Development */
+/* =========================================================
+   SETTINGS — UNDER-DEVELOPMENT ITEMS
+   ========================================================= */
 
 .development-card {
     padding: 8px 24px;
@@ -1872,17 +1970,6 @@ button:disabled {
     }
 }
 
-/* Application Footer */
-
-.app-footer {
-    padding: 20px 24px;
-    border-top: 1px solid var(--border-soft);
-    color: var(--text-dim);
-    font-size: 11px;
-    line-height: 1.6;
-    text-align: center;
-}
-
 /* =========================================================
    FOCUS / ACCESSIBILITY
    ========================================================= */
@@ -1907,10 +1994,6 @@ a:focus-visible {
 
     .main-content {
         padding: 30px 24px;
-    }
-
-    .content-grid {
-        grid-template-columns: 1fr;
     }
 
     .category-content {
@@ -2030,5 +2113,167 @@ a:focus-visible {
 
     .modal-actions button {
         width: 100%;
+    }
+}
+
+@media (max-width: 1100px) {
+    .content-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .monthly-insights-card {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 700px) {
+    .content-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .monthly-insights-card {
+        grid-column: auto;
+    }
+}
+
+/* Mobile navigation */
+/* Minimal circular mobile navigation toggle */
+.mobile-menu-button {
+    display: flex !important;
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    z-index: 1300;
+
+    width: 34px;
+    height: 34px;
+    padding: 0;
+
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(20, 20, 20, 0.12);
+    border: 1px solid rgba(180, 180, 180, 0.18);
+    border-radius: 50%;
+
+    cursor: pointer;
+    opacity: 0.65;
+
+    transition:
+        transform 280ms ease,
+        opacity 200ms ease,
+        background 200ms ease,
+        border-color 200ms ease;
+}
+
+.mobile-menu-button:hover {
+    opacity: 0.9;
+    background: rgba(180, 180, 180, 0.06);
+    border-color: rgba(180, 180, 180, 0.35);
+}
+
+.menu-orbit {
+        width: 13px;
+        height: 13px;
+        display: grid;
+        place-items: center;
+        border: 1px solid #404441;
+        border-radius: 50%;
+        transition: transform 250ms ease, border-color 250ms ease;
+    }
+
+    .menu-orbit-dot {
+        width: 4px;
+        height: 4px;
+        background: #404441;
+        border-radius: 50%;
+        transition: transform 250ms ease;
+    }
+
+    .mobile-menu-button.menu-button-open .menu-orbit {
+        transform: rotate(90deg);
+        border-color: #404441;
+    }
+
+    .mobile-menu-button.menu-button-open .menu-orbit-dot {
+        transform: translateX(3px);
+    }
+
+    .mobile-menu-button {
+        outline: 1px solid #404441;
+        outline-offset: 3px;
+    }
+
+    .mobile-menu-button.menu-button-open {
+        transform: translateX(254px);
+    }
+
+    .sidebar-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1200;
+        width: 260px;
+        height: 100dvh;
+        height: 100vh;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        visibility: hidden;
+    }
+
+    .sidebar-container.sidebar-container-open {
+        transform: translateX(0);
+        visibility: visible;
+
+        transform: translateX(0) !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        z-index: 1200 !important;
+    }
+
+    .sidebar-container.sidebar-container-open .sidebar {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    .sidebar-container .sidebar {
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .sidebar-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 1150;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        background: rgba(0, 0, 0, 0.65);
+        border: none;
+        cursor: pointer;
+    }
+
+    .app-shell {
+        width: 100%;
+    }
+
+    .app-content {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .main-content {
+        width: 100%;
+        min-width: 0;
+        padding-top: 76px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sidebar-container {
+        transition: none;
     }
 }

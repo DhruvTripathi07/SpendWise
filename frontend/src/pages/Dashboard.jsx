@@ -6,6 +6,8 @@ import AppLayout from "../components/AppLayout";
 function Dashboard() {
     const [dashboard, setDashboard] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [insights, setInsights] = useState([]);
+    const [insightsExpanded, setInsightsExpanded] = useState(false);
     const [error, setError] = useState("");
 
     const getCurrentMonth = () => {
@@ -39,9 +41,22 @@ function Dashboard() {
                 setLoading(false);
             }
         };
-
         fetchDashboard();
     }, [month]);
+    
+    useEffect(() => {
+        const fetchInsights = async () => {
+            try {
+                const response = await api.get(`/insights?month=${month}`);
+                setInsights(response.data);
+            } catch (err) {
+                console.error("Failed to load insights:", err);
+            }
+        };
+        fetchInsights();
+    }, [month]);
+    
+
 
     if (loading) {
         return <div className="app loading-state">Loading dashboard...</div>;
@@ -82,7 +97,7 @@ function Dashboard() {
                             </h1>
 
                             <p className="dashboard-subtitle">
-                                Keeping an eye on your fincances, as one should!
+                                Keeping an eye on your finances, as one should!
                             </p>
                         </div>
 
@@ -152,7 +167,7 @@ function Dashboard() {
 
                     </section>
 
-                    {/* Category + Budget */}
+                    {/* Category + Budget + Insights */}
 
                     <section className="content-grid">
 
@@ -331,7 +346,60 @@ function Dashboard() {
 
                         </div>
 
-                    </section>
+                        {/* Monthly Insights */}
+                        <section className={`card monthly-insights-card ${
+                            insightsExpanded ? "expanded" : ""
+                        }`}>
+                            <div className="monthly-insights-header">
+                                <div>
+                                    <h2 className="card-title">MONTHLY INSIGHTS</h2>
+                                    <p className="monthly-insights-subtitle">
+                                        Personalised observations for {displayMonth}
+                                    </p>
+                                </div>
+
+                                {insights.length > 0 && (
+                                    <button
+                                        className="insights-toggle"
+                                        onClick={() => setInsightsExpanded(!insightsExpanded)}
+                                        aria-expanded={insightsExpanded}
+                                    >
+                                        {insightsExpanded ? "Show less ↑" : "Explore insights →"}
+                                    </button>
+                                )}
+                            </div>
+
+                            {insights.length === 0 ? (
+                                <p className="monthly-insights-empty">
+                                    No notable spending patterns yet. Keep tracking your expenses
+                                    to unlock personalised insights.
+                                </p>
+                            ) : (
+                                <div className="monthly-insights-list">
+                                    {(insightsExpanded ? insights : insights.slice(0, 3)).map(
+                                        (insight, index) => (
+                                            <article
+                                                className="monthly-insight-item"
+                                                key={`${insight.type}-${index}`}
+                                            >
+                                                <div className="monthly-insight-content">
+                                                    <h3>{insight.title}</h3>
+                                                    <p>{insight.message}</p>
+
+                                                    {insightsExpanded && (
+                                                        <div className="monthly-insight-recommendation">
+                                                            <span>RECOMMENDATION</span>
+                                                            <p>{insight.recommendation}</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </article>
+                                        )
+                                    )}
+                                </div>
+                            )}
+                        </section> {/* End of Monthly Insights */}
+                    </section>  {/* End of Content Grid */}
 
                     {/* Recent Expenses */}
 
