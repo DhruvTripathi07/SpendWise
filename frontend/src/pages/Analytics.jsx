@@ -163,7 +163,7 @@ function Analytics() {
                         </div>
                     </section>
 
-                    <section className="content-grid">
+                    <section className="content-analytics">
                         <div className="recent-card">
                             <div className="section-heading">
                                 <div>

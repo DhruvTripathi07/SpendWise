@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import api from "../services/api";
 import { formatCurrency } from "../utils/currency";
 import AppLayout from "../components/AppLayout";
@@ -7,7 +8,13 @@ function Dashboard() {
     const [dashboard, setDashboard] = useState(null);
     const [loading, setLoading] = useState(true);
     const [insights, setInsights] = useState([]);
-    const [insightsExpanded, setInsightsExpanded] = useState(false);
+    const insightsCardRef = useRef(null);
+    const closeTimerRef = useRef(null);
+
+    const [insightsModalOpen, setInsightsModalOpen] = useState(false);
+    const [insightsModalExpanded, setInsightsModalExpanded] = useState(false);
+    const [insightsModalClosing, setInsightsModalClosing] = useState(false);
+    const [insightsStartRect, setInsightsStartRect] = useState(null);
     const [error, setError] = useState("");
 
     const getCurrentMonth = () => {
@@ -28,6 +35,62 @@ function Dashboard() {
 
         setMonth(`${newYear}-${newMonth}`);
     };
+
+    const openInsights = () => {
+        if (!insightsCardRef.current) return;
+
+        const rect = insightsCardRef.current.getBoundingClientRect();
+
+        setInsightsStartRect({
+            top: rect.top,
+            left: rect.left,
+            width: rect.width,
+            height: rect.height,
+        });
+
+        setInsightsModalClosing(false);
+        setInsightsModalExpanded(false);
+        setInsightsModalOpen(true);
+
+        // Allow the starting position to render before animating.
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setInsightsModalExpanded(true);
+            });
+        });
+    };
+
+    const closeInsights = () => {
+        if (!insightsModalOpen || insightsModalClosing) return;
+
+        setInsightsModalClosing(true);
+        setInsightsModalExpanded(false);
+    };
+
+
+    useEffect(() => {
+        if (!insightsModalOpen) return;
+
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") {
+                closeInsights();
+            }
+        };
+
+        document.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [insightsModalOpen, insightsModalClosing]);
+
+    useEffect(() => {
+        return () => {
+            if (closeTimerRef.current) {
+                clearTimeout(closeTimerRef.current);
+            }
+        };
+    }, []);
 
     useEffect(() => {
         const fetchDashboard = async () => {
@@ -346,13 +409,17 @@ function Dashboard() {
 
                         </div>
 
-                        {/* Monthly Insights */}
-                        <section className={`card monthly-insights-card ${
-                            insightsExpanded ? "expanded" : ""
-                        }`}>
+                        {/* Monthly Insights — Dashboard Card */}
+                        <section
+                            ref={insightsCardRef}
+                            className={`card monthly-insights-card ${
+                                insightsModalOpen ? "insights-modal-source" : ""
+                            }`}
+                        >
                             <div className="monthly-insights-header">
                                 <div>
                                     <h2 className="card-title">MONTHLY INSIGHTS</h2>
+
                                     <p className="monthly-insights-subtitle">
                                         Personalised observations for {displayMonth}
                                     </p>
@@ -361,10 +428,10 @@ function Dashboard() {
                                 {insights.length > 0 && (
                                     <button
                                         className="insights-toggle"
-                                        onClick={() => setInsightsExpanded(!insightsExpanded)}
-                                        aria-expanded={insightsExpanded}
+                                        onClick={openInsights}
+                                        aria-label="Expand monthly insights"
                                     >
-                                        {insightsExpanded ? "Show less ↑" : "Explore insights →"}
+                                        Explore insights →
                                     </button>
                                 )}
                             </div>
@@ -376,29 +443,20 @@ function Dashboard() {
                                 </p>
                             ) : (
                                 <div className="monthly-insights-list">
-                                    {(insightsExpanded ? insights : insights.slice(0, 3)).map(
-                                        (insight, index) => (
-                                            <article
-                                                className="monthly-insight-item"
-                                                key={`${insight.type}-${index}`}
-                                            >
-                                                <div className="monthly-insight-content">
-                                                    <h3>{insight.title}</h3>
-                                                    <p>{insight.message}</p>
-
-                                                    {insightsExpanded && (
-                                                        <div className="monthly-insight-recommendation">
-                                                            <span>RECOMMENDATION</span>
-                                                            <p>{insight.recommendation}</p>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </article>
-                                        )
-                                    )}
+                                    {insights.slice(0, 3).map((insight, index) => (
+                                        <article
+                                            className="monthly-insight-item"
+                                            key={`${insight.type}-${index}`}
+                                        >
+                                            <div className="monthly-insight-content">
+                                                <h3>{insight.title}</h3>
+                                                <p>{insight.message}</p>
+                                            </div>
+                                        </article>
+                                    ))}
                                 </div>
                             )}
-                        </section> {/* End of Monthly Insights */}
+                        </section> {/* End Monthly Insights */}
                     </section>  {/* End of Content Grid */}
 
                     {/* Recent Expenses */}
@@ -479,6 +537,107 @@ function Dashboard() {
 
                     </section>
 
+                {/* Expanded Monthly Insights */}
+                    {insightsModalOpen &&
+                        insightsStartRect &&
+                        createPortal(
+                            <div
+                                className={`insights-modal-overlay ${insightsModalExpanded || insightsModalClosing ? "is-visible" : ""}
+                                }`}
+                                onMouseDown={(event) => {
+                                    if (event.target === event.currentTarget) {
+                                        closeInsights();
+                                    }
+                                }}
+                                aria-hidden={false}
+                            >
+                                <section
+                                    className={`insights-modal-card ${
+                                        insightsModalExpanded ? "is-expanded" : ""
+                                    } ${
+                                        insightsModalClosing ? "is-closing" : ""
+                                    }`}
+                                    style={{
+                                        "--start-top": `${insightsStartRect.top}px`,
+                                        "--start-left": `${insightsStartRect.left}px`,
+                                        "--start-width": `${insightsStartRect.width}px`,
+                                        "--start-height": `${insightsStartRect.height}px`,
+                                    }}
+                                    role="dialog"
+                                    aria-modal="true"
+                                    aria-labelledby="expanded-insights-title"
+
+                                    onTransitionEnd={(event) => { 
+                                        if ( 
+                                            event.target === event.currentTarget && event.propertyName === "transform" && insightsModalClosing 
+                                        ) { 
+                                            setInsightsModalOpen(false); 
+                                            setInsightsModalClosing(false); 
+                                            setInsightsStartRect(null); 
+                                        } 
+                                    }}
+                                >
+                                    <div className="monthly-insights-header">
+                                        <div>
+                                            <h2
+                                                id="expanded-insights-title"
+                                                className="card-title"
+                                            >
+                                                MONTHLY INSIGHTS
+                                            </h2>
+
+                                            <p className="monthly-insights-subtitle">
+                                                Personalised observations for {displayMonth}
+                                            </p>
+                                        </div>
+
+                                        <button
+                                            className="insights-modal-close"
+                                            onClick={closeInsights}
+                                            aria-label="Close monthly insights"
+                                            autoFocus
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+
+                                    <div className="insights-modal-body">
+                                        {insights.length === 0 ? (
+                                            <p className="monthly-insights-empty">
+                                                No notable spending patterns yet.
+                                            </p>
+                                        ) : (
+                                            <div className="monthly-insights-list">
+                                                {insights.map((insight, index) => (
+                                                    <article
+                                                        className="monthly-insight-item"
+                                                        key={`${insight.type}-${index}`}
+                                                    >
+                                                        <div className="monthly-insight-content">
+                                                            <h3>{insight.title}</h3>
+                                                            <p>{insight.message}</p>
+
+                                                            {insight.recommendation && (
+                                                                <div className="monthly-insight-recommendation">
+                                                                    <span>
+                                                                        RECOMMENDATION
+                                                                    </span>
+                                                                    <p>
+                                                                        {insight.recommendation}
+                                                                    </p>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </article>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </section>
+                            </div>,
+                            document.body
+                        )}
+                    {/* End Expanded Monthly Insights */}
                 </AppLayout>
     );
 }
