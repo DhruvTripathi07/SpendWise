@@ -21,7 +21,12 @@ function Budgets() {
 
         try {
             const response = await api.get("/budgets");
-            setBudgets(response.data);
+            
+            const selectedBudgets = response.data.filter(
+                (budget) => budget.month.slice(0, 7) === month
+            );
+
+            setBudgets(selectedBudgets);
         } catch (err) {
             console.error(err);
             setError("Failed to load budgets.");
@@ -96,9 +101,16 @@ function Budgets() {
         }
     };
 
+    const getCurrentMonth = () => {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    };
+
+    const [month, setMonth] = useState(getCurrentMonth());
+
     useEffect(() => {
         fetchBudgets();
-    }, []);
+    }, [month]);
 
     return (
         <AppLayout>
@@ -118,13 +130,67 @@ function Budgets() {
                             </p>
                         </div>
 
-                        <button 
-                        className="month-button"
-                        onClick={() => {
-                            setFormError("");
-                            setShowForm(true)}}>
-                            + Add Budget
-                        </button>
+                        <div className="month-controls">
+                            <button
+                                type="button"
+                                className="month-button"
+                                onClick={() => {
+                                    const [year, currentMonth] = month.split("-");
+                                    const date = new Date(
+                                        Number(year),
+                                        Number(currentMonth) - 2
+                                    );
+
+                                    setMonth(
+                                        `${date.getFullYear()}-${String(
+                                            date.getMonth() + 1
+                                        ).padStart(2, "0")}`
+                                    );
+                                }}
+                                aria-label="Previous month"
+                            >
+                                ‹
+                            </button>
+
+                            <div className="month-display">
+                                {new Date(`${month}-01T12:00:00`).toLocaleDateString(
+                                    "en-IN",
+                                    { month: "long", year: "numeric" }
+                                )}
+                            </div>
+
+                            <button
+                                type="button"
+                                className="month-button"
+                                onClick={() => {
+                                    const [year, currentMonth] = month.split("-");
+                                    const date = new Date(
+                                        Number(year),
+                                        Number(currentMonth)
+                                    );
+
+                                    setMonth(
+                                        `${date.getFullYear()}-${String(
+                                            date.getMonth() + 1
+                                        ).padStart(2, "0")}`
+                                    );
+                                }}
+                                aria-label="Next month"
+                            >
+                                ›
+                            </button>
+
+                            <button
+                                type="button"
+                                className="month-button"
+                                onClick={() => {
+                                    setFormError("");
+                                    setShowForm(true);
+                                }}
+                            >
+                                + Add Budget
+                            </button>
+                        </div>
 
                     </header>
 
@@ -268,6 +334,7 @@ function Budgets() {
             {(showForm || editingBudget) && (
                 <BudgetForm
                     budget={editingBudget}
+                    selectedMonth={month}
                     onSubmit={
                         editingBudget
                             ? handleEditBudget

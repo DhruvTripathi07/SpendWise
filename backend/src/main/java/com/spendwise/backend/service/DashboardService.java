@@ -34,7 +34,7 @@ public class DashboardService {
                 summary.getMonth(),
                 summary.getTotalSpent(),
                 summary.getCategories(),
-                budgetService.getAllBudgets(),
+                budgetService.getBudgetsByMonth(month),
                 recentExpenses);
     }
 }

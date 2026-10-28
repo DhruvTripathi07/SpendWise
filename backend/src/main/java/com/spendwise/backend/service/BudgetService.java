@@ -74,6 +74,18 @@ public class BudgetService {
                 .toList();
     }
 
+    public List<BudgetResponse> getBudgetsByMonth(YearMonth month) {
+
+        User currentUser = getCurrentUser();
+
+        return budgetRepository
+                .findByUserId(currentUser.getId())
+                .stream()
+                .filter(budget -> YearMonth.from(budget.getMonth()).equals(month))
+                .map(this::buildBudgetResponse)
+                .toList();
+    }
+    
     // READ BY ID
     public BudgetResponse getBudgetById(int id) {
 

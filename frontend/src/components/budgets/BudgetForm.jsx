@@ -3,6 +3,7 @@ import { getCurrency } from "../../utils/currency";
 
 function BudgetForm({
     budget,
+    selectedMonth,
     onSubmit,
     onClose,
     submitting,
@@ -11,7 +12,7 @@ function BudgetForm({
     const [form, setForm] = useState({
         amount: "",
         category: "",
-        month: new Date().toISOString().slice(0, 7)
+        month: selectedMonth || new Date().toISOString().slice(0, 7)
     });
 
     useEffect(() => {
