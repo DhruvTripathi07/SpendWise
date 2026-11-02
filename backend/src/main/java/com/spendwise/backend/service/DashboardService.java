@@ -4,7 +4,6 @@ import com.spendwise.backend.dto.DashboardResponse;
 import com.spendwise.backend.dto.ExpenseResponse;
 import com.spendwise.backend.dto.MonthlySummaryResponse;
 
-import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -28,7 +27,8 @@ public class DashboardService {
 
         MonthlySummaryResponse summary = expenseService.getMonthlySummary(month);
 
-        List<ExpenseResponse> recentExpenses = expenseService.getExpensesByMonth(month.atDay(1));
+        List<ExpenseResponse> recentExpenses =
+                expenseService.getRecentExpensesByMonth(month.atDay(1));
 
         return new DashboardResponse(
                 summary.getMonth(),

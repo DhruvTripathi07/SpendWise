@@ -16,22 +16,27 @@ import java.util.Date;
 public class JwtService {
 
     private final SecretKey secretKey;
+    private final long jwtExpiration;
 
-    public JwtService(@Value("${jwt.secret}") String secret) {
+    public JwtService(
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.expiration}") long jwtExpiration) {
+
         this.secretKey = Keys.hmacShaKeyFor(
-                secret.getBytes(StandardCharsets.UTF_8)
-        );
+                secret.getBytes(StandardCharsets.UTF_8));
+
+        this.jwtExpiration = jwtExpiration;
     }
 
     public String generateToken(User user) {
 
+        long currentTime = System.currentTimeMillis();
+
         return Jwts.builder()
                 .subject(user.getEmail())
                 .claim("userId", user.getId())
-                .issuedAt(new Date())
-                .expiration(
-                        new Date(System.currentTimeMillis() + 86400000)
-                )
+                .issuedAt(new Date(currentTime))
+                .expiration(new Date(currentTime + jwtExpiration))
                 .signWith(secretKey)
                 .compact();
     }
@@ -49,27 +54,12 @@ public class JwtService {
     public boolean isTokenValid(String token, User user) {
 
         try {
-
             String email = extractEmail(token);
 
-            return email.equals(user.getEmail())
-                    && !isTokenExpired(token);
+            return email != null && email.equals(user.getEmail());
 
-        } catch (Exception e) {
-
+        } catch (RuntimeException exception) {
             return false;
         }
-    }
-
-    private boolean isTokenExpired(String token) {
-
-        Date expiration = Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getExpiration();
-
-        return expiration.before(new Date());
     }
 }

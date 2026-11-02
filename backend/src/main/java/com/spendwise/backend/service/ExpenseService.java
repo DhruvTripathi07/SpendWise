@@ -18,6 +18,10 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service; 
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -60,6 +64,65 @@ public class ExpenseService {
                 .toList();
     }
 
+    public Page<ExpenseResponse> getExpenses(
+            String category,
+            YearMonth month,
+            int page,
+            int size) {
+
+        User currentUser = getCurrentUser();
+        Pageable pageable = PageRequest.of(
+                page,
+                Math.min(size, 100),
+                Sort.by(Sort.Order.desc("date"), Sort.Order.desc("id")));
+        String normalizedCategory = category == null || category.isBlank() ? null : category;
+
+        Page<Expense> expenses;
+        if (normalizedCategory != null && month != null) {
+            LocalDate startDate = month.atDay(1);
+            LocalDate endDate = month.plusMonths(1).atDay(1);
+            expenses = expenseRepository
+                    .findAllByUserIdAndCategoryAndDateGreaterThanEqualAndDateLessThan(
+                            currentUser.getId(),
+                            normalizedCategory,
+                            startDate,
+                            endDate,
+                            pageable);
+        } else if (normalizedCategory != null) {
+            expenses = expenseRepository.findAllByUserIdAndCategory(
+                    currentUser.getId(),
+                    normalizedCategory,
+                    pageable);
+        } else if (month != null) {
+            LocalDate startDate = month.atDay(1);
+            LocalDate endDate = month.plusMonths(1).atDay(1);
+            expenses = expenseRepository
+                    .findAllByUserIdAndDateGreaterThanEqualAndDateLessThan(
+                            currentUser.getId(),
+                            startDate,
+                            endDate,
+                            pageable);
+        } else {
+            expenses = expenseRepository.findAllByUserId(
+                    currentUser.getId(),
+                    pageable);
+        }
+
+        return expenses.map(this::buildExpenseResponse);
+    }
+
+    public List<String> getExpenseCategories(YearMonth month) {
+        User currentUser = getCurrentUser();
+        if (month == null) {
+            return expenseRepository.findCategoriesByUserId(currentUser.getId());
+        }
+
+        return expenseRepository.findCategoriesByUserIdAndDateRange(
+                currentUser.getId(),
+                month.atDay(1),
+                month.plusMonths(1).atDay(1));
+    }
+
     public List<ExpenseResponse> getExpensesByCategory(String category) {
 
         User currentUser = getCurrentUser();
@@ -95,6 +158,23 @@ public class ExpenseService {
 
         return expenseRepository
                 .findByUserIdAndDateGreaterThanEqualAndDateLessThan(
+                        currentUser.getId(),
+                        startDate,
+                        endDate)
+                .stream()
+                .map(this::buildExpenseResponse)
+                .toList();
+    }
+
+    public List<ExpenseResponse> getRecentExpensesByMonth(LocalDate month) {
+
+        User currentUser = getCurrentUser();
+
+        LocalDate startDate = month.withDayOfMonth(1);
+        LocalDate endDate = startDate.plusMonths(1);
+
+        return expenseRepository
+                .findTop5ByUserIdAndDateGreaterThanEqualAndDateLessThanOrderByDateDescIdDesc(
                         currentUser.getId(),
                         startDate,
                         endDate)

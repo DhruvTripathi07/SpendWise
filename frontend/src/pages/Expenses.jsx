@@ -8,6 +8,7 @@ import { formatCurrency } from "../utils/currency";
 
 function Expenses() {
     const [expenses, setExpenses] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [showForm, setShowForm] = useState(false);
@@ -22,6 +23,9 @@ function Expenses() {
     };
     const [month, setMonth] = useState(getCurrentMonth());
     const [category, setCategory] = useState("");
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalElements, setTotalElements] = useState(0);
 
     //Adding an Expense
     const handleAddExpense = async (expense) => {
@@ -98,30 +102,53 @@ function Expenses() {
                 params.category = category;
             }
 
+            params.page = page;
+            params.size = 20;
+
             const response = await api.get("/expenses", {
                 params,
             });
 
-            setExpenses(response.data);
+            const lastPage = Math.max(response.data.totalPages - 1, 0);
+            if (page > lastPage) {
+                setPage(lastPage);
+                return;
+            }
+
+            setExpenses(response.data.content);
+            setTotalPages(response.data.totalPages);
+            setTotalElements(response.data.totalElements);
         } catch (err) {
             console.error(err);
             setError("Failed to load expenses.");
         } finally {
             setLoading(false);
         }
-    }, [month, category]);
+    }, [month, category, page]);
 
     useEffect(() => {
         fetchExpenses();
     }, [fetchExpenses]);
 
-    const categories = [
-        ...new Set(expenses.map((expense) => expense.category))
-    ];
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const params = month ? { month } : {};
+                const response = await api.get("/expenses/categories", { params });
+                setCategories(response.data);
+            } catch (err) {
+                console.error(err);
+                setError("Failed to load expense categories.");
+            }
+        };
+
+        fetchCategories();
+    }, [month]);
 
     const resetFilters = () => {
         setMonth(getCurrentMonth());
         setCategory("");
+        setPage(0);
     };
 
     return (
@@ -157,8 +184,14 @@ function Expenses() {
                         month={month}
                         category={category}
                         categories={categories}
-                        onMonthChange={setMonth}
-                        onCategoryChange={setCategory}
+                        onMonthChange={(value) => {
+                            setMonth(value);
+                            setPage(0);
+                        }}
+                        onCategoryChange={(value) => {
+                            setCategory(value);
+                            setPage(0);
+                        }}
                         onReset={resetFilters}
                     />
 
@@ -171,7 +204,7 @@ function Expenses() {
                             </h2>
 
                             <span className="card-link">
-                                {expenses.length} expenses
+                                {totalElements} expenses
                             </span>
 
                         </div>
@@ -271,6 +304,30 @@ function Expenses() {
                                 </tbody>
 
                             </table>
+                        )}
+
+                        {!loading && !error && totalPages > 1 && (
+                            <div className="pagination-controls">
+                                <button
+                                    type="button"
+                                    className="secondary-button"
+                                    onClick={() => setPage((currentPage) => currentPage - 1)}
+                                    disabled={page === 0}
+                                >
+                                    Previous
+                                </button>
+                                <span>
+                                    Page {page + 1} of {totalPages}
+                                </span>
+                                <button
+                                    type="button"
+                                    className="secondary-button"
+                                    onClick={() => setPage((currentPage) => currentPage + 1)}
+                                    disabled={page + 1 >= totalPages}
+                                >
+                                    Next
+                                </button>
+                            </div>
                         )}
 
                     </section>

@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 
 public class BudgetRequest {
 
+    @NotNull(message = "amount must not be null")
     @Positive(message = "amount must be greater than 0")
     private BigDecimal amount;
 

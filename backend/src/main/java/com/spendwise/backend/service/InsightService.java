@@ -177,10 +177,7 @@ public class InsightService {
                 YearMonth month,
                 List<InsightResponse> insights) {
 
-                List<BudgetResponse> budgets = budgetService.getAllBudgets()
-                        .stream()
-                        .filter(budget -> budget.getMonth().equals(month))
-                        .toList();
+                List<BudgetResponse> budgets = budgetService.getBudgetsByMonth(month);
 
                 for (BudgetResponse budget : budgets) {
 

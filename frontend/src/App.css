@@ -939,6 +939,16 @@ button:disabled {
     border-collapse: collapse;
 }
 
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding-top: 20px;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
 .expense-table th {
     padding: 0 12px 14px;
     color: var(--text-subtle);

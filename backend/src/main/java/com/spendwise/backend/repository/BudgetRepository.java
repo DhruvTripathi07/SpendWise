@@ -10,6 +10,11 @@ import java.util.Optional;
 public interface BudgetRepository extends JpaRepository<Budget, Integer> {
     List<Budget> findByUserId(int userId);
 
+    List<Budget> findByUserIdAndMonthGreaterThanEqualAndMonthLessThan(
+            int userId,
+            LocalDate startMonth,
+            LocalDate endMonth);
+
     Optional<Budget> findByUserIdAndCategoryAndMonth(
             int userId,
             String category,

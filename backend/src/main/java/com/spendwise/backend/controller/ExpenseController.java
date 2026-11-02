@@ -9,7 +9,6 @@ import com.spendwise.backend.dto.MonthlySpendingResponse;
 
 import jakarta.validation.Valid;
 
-import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -18,12 +17,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.server.ResponseStatusException;
 
 
 @RestController
@@ -42,23 +43,25 @@ public class ExpenseController {
     }
     
     @GetMapping
-    public List<ExpenseResponse> getAllExpenses(
+    public Page<ExpenseResponse> getAllExpenses(
             @RequestParam(required = false) String category,
+            @RequestParam(required = false) YearMonth month,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        if (page < 0 || size < 1) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "page must be non-negative and size must be positive");
+        }
+
+        return expenseService.getExpenses(category, month, page, Math.min(size, 100));
+    }
+
+    @GetMapping("/categories")
+    public List<String> getExpenseCategories(
             @RequestParam(required = false) YearMonth month) {
-
-        if (category != null && !category.isBlank() && month != null) {
-            return expenseService.getExpensesByCategoryAndMonth(category, month.atDay(1));
-        }
-
-        if (category != null && !category.isBlank()) {
-            return expenseService.getExpensesByCategory(category);
-        }
-
-        if (month != null) {
-            return expenseService.getExpensesByMonth(month.atDay(1));
-        }
-
-        return expenseService.getAllExpenses();
+        return expenseService.getExpenseCategories(month);
     }
 
     @GetMapping("/{id}")

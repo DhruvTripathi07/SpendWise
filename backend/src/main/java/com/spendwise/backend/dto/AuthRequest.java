@@ -7,14 +7,16 @@ import jakarta.validation.constraints.Size;
 public class AuthRequest {
 
     @NotBlank
+    @Size(max=100)
     private String name;
 
     @NotBlank
     @Email
+    @Size(max=150)
     private String email;
 
     @NotBlank
-    @Size(min = 8, message = "Password must be at least 8 characters")
+    @Size(min = 8, max=72, message = "Password must be at least 8 characters")
     private String password;
 
     public String getName() {

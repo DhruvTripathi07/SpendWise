@@ -13,6 +13,8 @@ import com.spendwise.backend.repository.ExpenseRepository;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -40,12 +42,13 @@ public class BudgetService {
     public BudgetResponse createBudget(BudgetRequest request) {
 
         User currentUser = getCurrentUser();
+        LocalDate normalizedMonth = normalizeMonth(request.getMonth());
 
         // Prevent duplicate budget for the same category and month
         if (budgetRepository.findByUserIdAndCategoryAndMonth(
                 currentUser.getId(),
                 request.getCategory(),
-                request.getMonth()).isPresent()) {
+                normalizedMonth).isPresent()) {
 
             throw new IllegalArgumentException(
                     "A budget already exists for this category and month");
@@ -55,7 +58,7 @@ public class BudgetService {
 
         budget.setAmount(request.getAmount());
         budget.setCategory(request.getCategory());
-        budget.setMonth(request.getMonth());
+        budget.setMonth(normalizedMonth);
         budget.setUser(currentUser);
 
         Budget savedBudget = budgetRepository.save(budget);
@@ -67,22 +70,64 @@ public class BudgetService {
     public List<BudgetResponse> getAllBudgets() {
 
         User currentUser = getCurrentUser();
+        List<Budget> budgets = budgetRepository.findByUserId(currentUser.getId());
 
-        return budgetRepository.findByUserId(currentUser.getId())
-                .stream()
-                .map(this::buildBudgetResponse)
+        if (budgets.isEmpty()) {
+            return List.of();
+        }
+
+        LocalDate startDate = budgets.stream()
+                .map(Budget::getMonth)
+                .map(month -> YearMonth.from(month).atDay(1))
+                .min(LocalDate::compareTo)
+                .orElseThrow();
+        LocalDate endDate = budgets.stream()
+                .map(Budget::getMonth)
+                .map(month -> YearMonth.from(month).plusMonths(1).atDay(1))
+                .max(LocalDate::compareTo)
+                .orElseThrow();
+
+        Map<BudgetSpendingKey, BigDecimal> spentByBudget =
+                getSpentAmountsByBudget(currentUser.getId(), startDate, endDate);
+
+        return budgets.stream()
+                .map(budget -> buildBudgetResponse(
+                        budget,
+                        spentByBudget.getOrDefault(
+                                new BudgetSpendingKey(
+                                        YearMonth.from(budget.getMonth()),
+                                        budget.getCategory()),
+                                BigDecimal.ZERO)))
                 .toList();
     }
 
     public List<BudgetResponse> getBudgetsByMonth(YearMonth month) {
 
         User currentUser = getCurrentUser();
+        LocalDate startDate = month.atDay(1);
+        LocalDate endDate = month.plusMonths(1).atDay(1);
 
-        return budgetRepository
-                .findByUserId(currentUser.getId())
-                .stream()
-                .filter(budget -> YearMonth.from(budget.getMonth()).equals(month))
-                .map(this::buildBudgetResponse)
+        List<Budget> budgets = budgetRepository
+                .findByUserIdAndMonthGreaterThanEqualAndMonthLessThan(
+                        currentUser.getId(),
+                        startDate,
+                        endDate);
+        if (budgets.isEmpty()) {
+            return List.of();
+        }
+
+        Map<String, BigDecimal> spentByCategory = new HashMap<>();
+        for (Map<String, Object> row : expenseRepository.getCategoryTotals(
+                currentUser.getId(),
+                startDate,
+                endDate)) {
+            spentByCategory.put((String) row.get("category"), (BigDecimal) row.get("total"));
+        }
+
+        return budgets.stream()
+                .map(budget -> buildBudgetResponse(
+                        budget,
+                        spentByCategory.getOrDefault(budget.getCategory(), BigDecimal.ZERO)))
                 .toList();
     }
     
@@ -113,12 +158,14 @@ public class BudgetService {
             throw new ResourceNotFoundException("Budget not found");
         }
 
+        LocalDate normalizedMonth = normalizeMonth(updatedBudget.getMonth());
+
         // Check if the new category/month combination
         // already belongs to another budget
         budgetRepository.findByUserIdAndCategoryAndMonth(
                 currentUser.getId(),
                 updatedBudget.getCategory(),
-                updatedBudget.getMonth()).ifPresent(existingBudget -> {
+                normalizedMonth).ifPresent(existingBudget -> {
 
                     if (existingBudget.getId() != id) {
                         throw new IllegalArgumentException(
@@ -128,7 +175,7 @@ public class BudgetService {
 
         budget.setAmount(updatedBudget.getAmount());
         budget.setCategory(updatedBudget.getCategory());
-        budget.setMonth(updatedBudget.getMonth());
+        budget.setMonth(normalizedMonth);
 
         Budget savedBudget = budgetRepository.save(budget);
         return buildBudgetResponse(savedBudget);
@@ -151,8 +198,9 @@ public class BudgetService {
 
     public BigDecimal getSpentAmount(Budget budget) {
 
-        LocalDate startDate = budget.getMonth();
-        LocalDate endDate = startDate.plusMonths(1);
+        YearMonth budgetMonth = YearMonth.from(budget.getMonth());
+        LocalDate startDate = budgetMonth.atDay(1);
+        LocalDate endDate = budgetMonth.plusMonths(1).atDay(1);
 
         return expenseRepository.getTotalSpent(
                 budget.getUser().getId(),
@@ -160,11 +208,16 @@ public class BudgetService {
                 startDate,
                 endDate);
     }
+
+    private LocalDate normalizeMonth(LocalDate month) {
+        return month.withDayOfMonth(1);
+    }
     
     private BudgetResponse buildBudgetResponse(Budget budget) {
+        return buildBudgetResponse(budget, getSpentAmount(budget));
+    }
 
-        BigDecimal spent = getSpentAmount(budget);
-
+    private BudgetResponse buildBudgetResponse(Budget budget, BigDecimal spent) {
         BigDecimal remaining = budget.getAmount().subtract(spent);
 
         BigDecimal progress = BigDecimal.ZERO;
@@ -188,6 +241,29 @@ public class BudgetService {
                 progressPercent,
                 overBudget
         );
+    }
+
+    private Map<BudgetSpendingKey, BigDecimal> getSpentAmountsByBudget(
+            int userId,
+            LocalDate startDate,
+            LocalDate endDate) {
+
+        Map<BudgetSpendingKey, BigDecimal> spentByBudget = new HashMap<>();
+        for (Object[] row : expenseRepository.getBudgetTotalsByMonth(
+                userId,
+                startDate,
+                endDate)) {
+            YearMonth month = YearMonth.of(
+                    ((Number) row[0]).intValue(),
+                    ((Number) row[1]).intValue());
+            String category = (String) row[2];
+            BigDecimal total = (BigDecimal) row[3];
+            spentByBudget.put(new BudgetSpendingKey(month, category), total);
+        }
+        return spentByBudget;
+    }
+
+    private record BudgetSpendingKey(YearMonth month, String category) {
     }
 
     // GET CURRENT USER

@@ -9,6 +9,22 @@ import { formatCurrency } from "../utils/currency";
 import "../App.css";
 import DailySpendingChart from "../components/DailySpendingChart";
 
+async function fetchAllMonthlyExpenses(month) {
+    const firstPage = await api.get("/expenses", {
+        params: { month, page: 0, size: 100 },
+    });
+    const expenses = [...firstPage.data.content];
+
+    for (let page = 1; page < firstPage.data.totalPages; page += 1) {
+        const response = await api.get("/expenses", {
+            params: { month, page, size: 100 },
+        });
+        expenses.push(...response.data.content);
+    }
+
+    return expenses;
+}
+
 function Analytics() {
     const getCurrentMonth = () => {
         const now = new Date();
@@ -43,15 +59,15 @@ function Analytics() {
             setError("");
 
             try {
-                const [expensesResponse, summaryResponse, monthlyResponse, budgetsResponse] =
+                const [monthlyExpenses, summaryResponse, monthlyResponse, budgetsResponse] =
                     await Promise.all([
-                        api.get(`/expenses?month=${month}`),
+                        fetchAllMonthlyExpenses(month),
                         api.get(`/expenses/summary?month=${month}`),
                         api.get(`/expenses/monthly-spending?month=${month}`),
                         api.get(`/budgets?month=${month}`),
                     ]);
 
-                setExpenses(expensesResponse.data);
+                setExpenses(monthlyExpenses);
                 setSummary(summaryResponse.data);
                 setMonthlySpending(monthlyResponse.data);
                 setBudgets(budgetsResponse.data);
