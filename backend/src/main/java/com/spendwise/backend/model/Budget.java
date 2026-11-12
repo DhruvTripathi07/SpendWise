@@ -14,7 +14,9 @@ import java.time.LocalDate;
 import java.math.BigDecimal;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "category", "month" }))
+@Table(uniqueConstraints = @UniqueConstraint(
+    name = "uk_budget_user_category_month",
+    columnNames = { "user_id", "category", "month" }))
 public class Budget {
 
     @Id

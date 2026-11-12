@@ -1,6 +1,8 @@
 package com.spendwise.backend.exception;
 
 import com.spendwise.backend.exception.ResourceNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.hibernate.exception.ConstraintViolationException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -85,5 +87,30 @@ public class GlobalExceptionHandler {
         response.put("status", 409);
 
         return response;
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public Map<String, Object> handleDataIntegrityViolation(
+            DataIntegrityViolationException ex) {
+
+        Throwable cause = ex;
+
+        while (cause != null) {
+
+            if (cause instanceof ConstraintViolationException constraintEx
+                    && "uk_budget_user_category_month".equals(
+                            constraintEx.getConstraintName())) {
+
+                Map<String, Object> response = new HashMap<>();
+                response.put("message", "A budget already exists for this category and month.");
+                response.put("status", 409);
+
+                return response;
+            }
+
+            cause = cause.getCause();
+        }
+
+        throw ex;
     }
 }
