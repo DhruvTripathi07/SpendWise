@@ -169,31 +169,70 @@ function Expenses() {
                             </p>
                         </div>
 
-                        <button 
-                            className="month-button" 
-                            onClick={() => {
-                                setFormError("");
-                                setShowForm(true)
-                                }}>
-                            + Add Expense
-                        </button>
+                        <div className="month-controls">
+                            <button
+                                type="button"
+                                className="month-button"
+                                onClick={() => {
+                                    const [year, currentMonth] = month.split("-");
+                                    const date = new Date(
+                                        Number(year),
+                                        Number(currentMonth) - 2
+                                    );
+
+                                    setMonth(
+                                        `${date.getFullYear()}-${String(
+                                            date.getMonth() + 1
+                                        ).padStart(2, "0")}`
+                                    );
+                                }}
+                                aria-label="Previous month"
+                            >
+                                ‹
+                            </button>
+
+                            <div className="month-display">
+                                {new Date(`${month}-01T12:00:00`).toLocaleDateString(
+                                    "en-IN",
+                                    { month: "long", year: "numeric" }
+                                )}
+                            </div>
+
+                            <button
+                                type="button"
+                                className="month-button"
+                                onClick={() => {
+                                    const [year, currentMonth] = month.split("-");
+                                    const date = new Date(
+                                        Number(year),
+                                        Number(currentMonth)
+                                    );
+
+                                    setMonth(
+                                        `${date.getFullYear()}-${String(
+                                            date.getMonth() + 1
+                                        ).padStart(2, "0")}`
+                                    );
+                                }}
+                                aria-label="Next month"
+                            >
+                                ›
+                            </button>
+
+                            <button
+                                type="button"
+                                className="month-button"
+                                onClick={() => {
+                                    setFormError("");
+                                    setShowForm(true);
+                                }}
+                            >
+                                + Add Expense
+                            </button>
+                        </div>
+
 
                     </header>
-
-                    <ExpenseFilters
-                        month={month}
-                        category={category}
-                        categories={categories}
-                        onMonthChange={(value) => {
-                            setMonth(value);
-                            setPage(0);
-                        }}
-                        onCategoryChange={(value) => {
-                            setCategory(value);
-                            setPage(0);
-                        }}
-                        onReset={resetFilters}
-                    />
 
                     <section className="card recent-card">
 

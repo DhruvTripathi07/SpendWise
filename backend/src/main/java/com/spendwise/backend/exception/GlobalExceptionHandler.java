@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -90,7 +91,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public Map<String, Object> handleDataIntegrityViolation(
+    public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(
             DataIntegrityViolationException ex) {
 
         Throwable cause = ex;
@@ -105,7 +106,7 @@ public class GlobalExceptionHandler {
                 response.put("message", "A budget already exists for this category and month.");
                 response.put("status", 409);
 
-                return response;
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
 
             cause = cause.getCause();
