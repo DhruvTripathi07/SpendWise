@@ -6,6 +6,8 @@ import com.spendwise.backend.model.User;
 import com.spendwise.backend.repository.UserRepository;
 import com.spendwise.backend.dto.LoginRequest;
 import com.spendwise.backend.dto.LoginResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,7 +32,9 @@ public class AuthService {
     public UserResponse register(AuthRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Email already registered");
         }
 
         User user = new User();
@@ -53,13 +57,17 @@ public class AuthService {
 
         User user = userRepository
                 .findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Invalid email or password"));
 
         if (!passwordEncoder.matches(
                 request.getPassword(),
                 user.getPassword())) {
 
-            throw new RuntimeException("Invalid email or password");
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Invalid email or password");
         }
 
         String token = jwtService.generateToken(user);
